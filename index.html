@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rooted Grounds Cafe - Online Ordering</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cafe: {
+                            dark: '#08140E',
+                            card: '#11251B',
+                            accent: '#1B3B2B',
+                            green: '#2D6A4F',
+                            lightgreen: '#52B788',
+                            gold: '#D4AF37',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #08140E;
+            color: #E2E8F0;
+        }
+        h1, h2, h3, .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #08140E;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1B3B2B;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2D6A4F;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-cafe-lightgreen selection:text-cafe-dark">
+
+    <!-- Top Navigation -->
+    <header class="sticky top-0 z-50 bg-cafe-dark/95 backdrop-blur-md border-b border-cafe-accent/60 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Name Only -->
+            <div class="flex flex-col">
+                <span class="font-serif text-xl sm:text-2xl font-bold tracking-wide text-white drop-shadow">Rooted Grounds</span>
+                <span class="text-[10px] sm:text-xs uppercase tracking-widest text-cafe-gold font-semibold">Cafe</span>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="flex items-center space-x-4">
+                <button onclick="toggleCartDrawer(true)" class="relative bg-cafe-green hover:bg-cafe-lightgreen text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2.5 shadow-lg">
+                    <i class="fa-solid fa-basket-shopping text-base"></i>
+                    <span class="hidden sm:inline font-semibold">My Order</span>
+                    <span id="cartBadge" class="absolute -top-2 -right-2 bg-cafe-gold text-cafe-dark text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center shadow-md transition-transform scale-100">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner with Featured Logo Branding -->
+    <section class="relative bg-gradient-to-b from-cafe-card to-cafe-dark border-b border-cafe-accent/60 py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:20px_20px]"></div>
+        <div class="max-w-4xl mx-auto text-center relative z-10 flex flex-col items-center">
+            
+            <!-- Sharp, High-Res Hero Logo Badge -->
+            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-4 border-cafe-gold shadow-2xl bg-cafe-card mb-6 flex items-center justify-center transform hover:rotate-2 transition-transform duration-300">
+                <img src="logo.png" alt="Rooted Grounds Cafe Logo" class="w-full h-full object-cover" style="image-rendering: -webkit-optimize-contrast;">
+            </div>
+
+            <span class="inline-block px-4 py-1.5 bg-cafe-gold/10 border border-cafe-gold/30 text-cafe-gold text-xs font-bold rounded-full uppercase tracking-widest mb-3 shadow-inner">Dine-In Online Menu</span>
+            <h1 class="text-3xl sm:text-5xl font-bold text-white mb-4 tracking-tight">Fresh Flavors, Cozy Vibes</h1>
+            <p class="text-slate-300 text-sm sm:text-base max-w-xl mx-auto mb-6 leading-relaxed">Explore our handcrafted drinks, delicious snacks, and comforting brews. Build your order and send it instantly to our kitchen via WhatsApp!</p>
+            <div class="flex flex-wrap justify-center gap-4 text-xs sm:text-sm text-slate-400 bg-cafe-dark/60 px-5 py-2.5 rounded-full border border-cafe-accent shadow-md">
+                <span class="flex items-center"><i class="fa-solid fa-location-dot text-cafe-gold mr-2"></i>Opposite Rudra Luxury Living, Lawgate Ashiana Road</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Area: Menu & Cart Preview -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Menu Categories & Items (Left 8 Cols on LG) -->
+        <div class="lg:col-span-8 space-y-8">
+            <!-- Category Tabs / Navigation -->
+            <div class="flex overflow-x-auto space-x-2.5 pb-2 scrollbar-none">
+                <button onclick="filterCategory('all')" id="tab-all" class="category-tab px-5 py-2.5 rounded-xl font-semibold text-sm whitespace-nowrap transition-all duration-200 bg-cafe-green text-white shadow-md">All Items</button>
+                <button onclick="filterCategory('drinks')" id="tab-drinks" class="category-tab px-5 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap transition-all duration-200 bg-cafe-card text-slate-300 hover:bg-cafe-accent border border-cafe-accent">Drinks &amp; Shakes</button>
+                <button onclick="filterCategory('snacks')" id="tab-snacks" class="category-tab px-5 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap transition-all duration-200 bg-cafe-card text-slate-300 hover:bg-cafe-accent border border-cafe-accent">Snacks &amp; Fast Food</button>
+            </div>
+
+            <!-- Menu Grid Container -->
+            <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <!-- Dynamically populated via JavaScript -->
+            </div>
+        </div>
+
+        <!-- Desktop Cart Sidebar (Right 4 Cols on LG) -->
+        <div class="hidden lg:block lg:col-span-4">
+            <div class="sticky top-28 bg-cafe-card border border-cafe-accent rounded-2xl p-6 shadow-2xl flex flex-col max-h-[calc(100vh-8rem)]">
+                <div class="flex items-center justify-between pb-4 border-b border-cafe-accent">
+                    <h2 class="text-xl font-serif font-bold text-white flex items-center">
+                        <i class="fa-solid fa-receipt text-cafe-gold mr-2"></i> Your Cafe Order
+                    </h2>
+                    <span id="desktopItemCount" class="text-xs bg-cafe-green text-white px-2.5 py-1 rounded-full font-medium shadow">0 items</span>
+                </div>
+
+                <!-- Cart Items List -->
+                <div id="desktopCartItems" class="flex-grow overflow-y-auto py-4 space-y-3 divide-y divide-cafe-accent/50">
+                    <div class="text-center py-12 text-slate-500">
+                        <i class="fa-solid fa-mug-hot text-4xl mb-3 opacity-40"></i>
+                        <p class="text-sm">Your cart is empty.<br>Select items from the menu to start order.</p>
+                    </div>
+                </div>
+
+                <!-- Order Form & Checkout Area -->
+                <div id="desktopCheckoutSection" class="pt-4 border-t border-cafe-accent space-y-4 hidden">
+                    <div class="space-y-3 bg-cafe-dark/60 p-3.5 rounded-xl border border-cafe-accent">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-cafe-gold">Dine-In Details</h3>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Your Name *</label>
+                            <input type="text" id="customerName" placeholder="e.g. Rahul Sharma" class="w-full bg-cafe-dark border border-cafe-accent rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cafe-lightgreen">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Table Number *</label>
+                            <input type="text" id="tableNumber" placeholder="e.g. Table 4 or Patio 2" class="w-full bg-cafe-dark border border-cafe-accent rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cafe-lightgreen">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5 text-sm px-1">
+                        <div class="flex justify-between text-slate-400">
+                            <span>Subtotal</span>
+                            <span id="desktopSubtotal">₹0</span>
+                        </div>
+                        <div class="flex justify-between text-slate-400 text-xs">
+                            <span>Taxes &amp; Packing</span>
+                            <span>₹0</span>
+                        </div>
+                        <div class="flex justify-between text-white font-bold text-base pt-2 border-t border-cafe-accent">
+                            <span>Total Amount</span>
+                            <span id="desktopTotal" class="text-cafe-gold">₹0</span>
+                        </div>
+                    </div>
+
+                    <button onclick="sendOrderToWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg transition-all flex items-center justify-center space-x-2.5">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        <span>Send Order via WhatsApp</span>
+                    </button>
+                    <p class="text-[11px] text-center text-slate-500">Opens WhatsApp with your pre-formatted order directly to Rooted Grounds Cafe.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Mobile Cart Drawer -->
+    <div id="cartDrawer" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden transition-opacity opacity-0 lg:hidden">
+        <div class="absolute inset-y-0 right-0 max-w-md w-full bg-cafe-card border-l border-cafe-accent shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300" id="cartDrawerContent">
+            <div class="p-5 flex items-center justify-between border-b border-cafe-accent">
+                <h2 class="text-lg font-serif font-bold text-white flex items-center">
+                    <i class="fa-solid fa-receipt text-cafe-gold mr-2"></i> Your Cafe Order
+                </h2>
+                <button onclick="toggleCartDrawer(false)" class="text-slate-400 hover:text-white p-2">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div id="mobileCartItems" class="flex-grow overflow-y-auto p-5 space-y-3 divide-y divide-cafe-accent/50">
+                <!-- Dynamically populated -->
+            </div>
+
+            <div id="mobileCheckoutSection" class="p-5 border-t border-cafe-accent space-y-4 bg-cafe-dark/80 hidden">
+                <div class="space-y-3 bg-cafe-dark p-3.5 rounded-xl border border-cafe-accent">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-cafe-gold">Dine-In Details</h3>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Your Name *</label>
+                        <input type="text" id="mobileCustomerName" placeholder="e.g. Rahul Sharma" class="w-full bg-cafe-card border border-cafe-accent rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cafe-lightgreen">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Table Number *</label>
+                        <input type="text" id="mobileTableNumber" placeholder="e.g. Table 4 or Patio 2" class="w-full bg-cafe-card border border-cafe-accent rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cafe-lightgreen">
+                    </div>
+                </div>
+
+                <div class="space-y-1.5 text-sm">
+                    <div class="flex justify-between text-slate-400">
+                        <span>Subtotal</span>
+                        <span id="mobileSubtotal">₹0</span>
+                    </div>
+                    <div class="flex justify-between text-white font-bold text-base pt-2 border-t border-cafe-accent">
+                        <span>Total Amount</span>
+                        <span id="mobileTotal" class="text-cafe-gold">₹0</span>
+                    </div>
+                </div>
+
+                <button onclick="sendOrderToWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg transition-all flex items-center justify-center space-x-2.5">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>Send Order via WhatsApp</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-cafe-dark border-t border-cafe-accent py-8 mt-auto text-center text-xs text-slate-400">
+        <div class="flex justify-center items-center space-x-2 mb-3">
+            <div class="w-8 h-8 rounded-full overflow-hidden border border-cafe-gold/50">
+                <img src="logo.png" alt="Logo" class="w-full h-full object-cover" style="image-rendering: -webkit-optimize-contrast;">
+            </div>
+            <span class="font-serif text-sm text-slate-200 font-semibold">Rooted Grounds Cafe</span>
+        </div>
+        <p>Opposite Rudra Luxury Living, Lawgate Ashiana Road</p>
+        <p class="mt-3 text-cafe-gold/80 font-medium">&copy; 2026 All Rights Reserved.</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        const menuData = [
+            {
+                id: 'd1',
+                name: 'Mojito Flavors',
+                category: 'drinks',
+                desc: 'Choice of Blue curacco, Grenadine, Green apple, Blue berry, Mojito mint, Green mint',
+                hasVariants: false,
+                price: 59,
+                variantName: 'Standard'
+            },
+            {
+                id: 'd2',
+                name: 'Shakes',
+                category: 'drinks',
+                desc: 'Choice of Chocolate oreo, Black current, Strawberry, Choco loaded shake',
+                hasVariants: false,
+                price: 79,
+                variantName: 'Standard'
+            },
+            {
+                id: 'd3',
+                name: 'Ginger Tea',
+                category: 'drinks',
+                desc: 'Freshly brewed aromatic ginger spiced tea',
+                hasVariants: false,
+                price: 19,
+                variantName: 'Standard'
+            },
+            {
+                id: 'd4',
+                name: 'Elaichi Tea',
+                category: 'drinks',
+                desc: 'Classic cardamom infused warm tea',
+                hasVariants: false,
+                price: 19,
+                variantName: 'Standard'
+            },
+            {
+                id: 'd5',
+                name: 'Hot Coffee',
+                category: 'drinks',
+                desc: 'Warm and comforting classic hot coffee',
+                hasVariants: false,
+                price: 19,
+                variantName: 'Standard'
+            },
+            {
+                id: 'd6',
+                name: 'Lemon Iced Tea',
+                category: 'drinks',
+                desc: 'Refreshing chilled iced tea with fresh lemon',
+                hasVariants: false,
+                price: 59,
+                variantName: 'Standard'
+            },
+            {
+                id: 'd7',
+                name: 'Iced Americano',
+                category: 'drinks',
+                desc: 'Chilled bold espresso over ice',
+                hasVariants: false,
+                price: 59,
+                variantName: 'Standard'
+            },
+            {
+                id: 'd8',
+                name: 'Cold Coffee',
+                category: 'drinks',
+                desc: 'Blended creamy chilled coffee delight',
+                hasVariants: false,
+                price: 79,
+                variantName: 'Standard'
+            },
+            {
+                id: 'd9',
+                name: 'Hot Chocolate',
+                category: 'drinks',
+                desc: 'Rich and velvety warm hot chocolate',
+                hasVariants: false,
+                price: 79,
+                variantName: 'Standard'
+            },
+            {
+                id: 's1',
+                name: 'Veg Burger',
+                category: 'snacks',
+                desc: 'Crispy veggie patty with fresh lettuce and signature sauce',
+                hasVariants: true,
+                variants: [
+                    { name: 'Single', price: 79 },
+                    { name: 'Double', price: 99 }
+                ]
+            },
+            {
+                id: 's2',
+                name: 'Chicken Smashed Burger',
+                category: 'snacks',
+                desc: 'Juicy smashed chicken patty packed with savory flavor',
+                hasVariants: true,
+                variants: [
+                    { name: 'Single', price: 89 },
+                    { name: 'Double', price: 119 }
+                ]
+            },
+            {
+                id: 's3',
+                name: 'Chicken Crispy Burger',
+                category: 'snacks',
+                desc: 'Extra crispy fried chicken fillet with special dressing',
+                hasVariants: true,
+                variants: [
+                    { name: 'Single', price: 119 },
+                    { name: 'Double', price: 149 }
+                ]
+            },
+            {
+                id: 's4',
+                name: 'White Sauce Pasta',
+                category: 'snacks',
+                desc: 'Creamy herb-infused Italian white sauce pasta (Full Plate)',
+                hasVariants: false,
+                price: 149,
+                variantName: 'Full Plate'
+            },
+            {
+                id: 's5',
+                name: 'Saucy Fried Panner',
+                category: 'snacks',
+                desc: 'Crispy fried paneer cubes tossed in tangy signature sauce (Full Plate)',
+                hasVariants: false,
+                price: 119,
+                variantName: 'Full Plate'
+            },
+            {
+                id: 's6',
+                name: 'Pan Grilled Spicy Chicken',
+                category: 'snacks',
+                desc: 'Tender chicken grilled with spicy herbs and seasonings',
+                hasVariants: true,
+                variants: [
+                    { name: 'Half', price: 89 },
+                    { name: 'Full', price: 109 }
+                ]
+            },
+            {
+                id: 's7',
+                name: 'Chicken Nuggets',
+                category: 'snacks',
+                desc: 'Golden fried crispy chicken nuggets',
+                hasVariants: true,
+                variants: [
+                    { name: 'Single', price: 79 },
+                    { name: 'Double', price: 99 }
+                ]
+            },
+            {
+                id: 's8',
+                name: 'Seekh Kababs',
+                category: 'snacks',
+                desc: 'Flavorful spiced seekh kababs',
+                hasVariants: true,
+                variants: [
+                    { name: 'Single', price: 79 },
+                    { name: 'Double', price: 99 }
+                ]
+            },
+            {
+                id: 's9',
+                name: 'Veg Cheese Nuggets',
+                category: 'snacks',
+                desc: 'Crispy exterior with gooey cheese and veggie filling',
+                hasVariants: true,
+                variants: [
+                    { name: 'Single', price: 79 },
+                    { name: 'Double', price: 99 }
+                ]
+            },
+            {
+                id: 's10',
+                name: 'Potato Cheese Pop',
+                category: 'snacks',
+                desc: 'Bite-sized crispy potato and cheese poppers',
+                hasVariants: true,
+                variants: [
+                    { name: 'Single', price: 79 },
+                    { name: 'Double', price: 99 }
+                ]
+            },
+            {
+                id: 's11',
+                name: 'Potato Wedges',
+                category: 'snacks',
+                desc: 'Seasoned potato wedges fried to golden perfection',
+                hasVariants: true,
+                variants: [
+                    { name: 'Single', price: 79 },
+                    { name: 'Double', price: 99 }
+                ]
+            },
+            {
+                id: 's12',
+                name: 'Salted Fried',
+                category: 'snacks',
+                desc: 'Classic crispy salted French fries',
+                hasVariants: true,
+                variants: [
+                    { name: 'Single', price: 79 },
+                    { name: 'Double', price: 99 }
+                ]
+            },
+            {
+                id: 's13',
+                name: 'Peri-Peri Fries',
+                category: 'snacks',
+                desc: 'Crispy fries tossed in spicy peri-peri seasoning',
+                hasVariants: true,
+                variants: [
+                    { name: 'Single', price: 89 },
+                    { name: 'Double', price: 109 }
+                ]
+            },
+            {
+                id: 's14',
+                name: 'Salted Crinkled Fried',
+                category: 'snacks',
+                desc: 'Crispy crinkle-cut salted fries',
+                hasVariants: true,
+                variants: [
+                    { name: 'Single', price: 89 },
+                    { name: 'Double', price: 109 }
+                ]
+            },
+            {
+                id: 's15',
+                name: 'Peanut Butter Sandwitch',
+                category: 'snacks',
+                desc: 'Nutty and delicious peanut butter sandwich',
+                hasVariants: true,
+                variants: [
+                    { name: 'Single', price: 49 },
+                    { name: 'Double', price: 99 }
+                ]
+            },
+            {
+                id: 's16',
+                name: 'Grilled Cheese Sandwitch',
+                category: 'snacks',
+                desc: 'Buttery toasted sandwich loaded with melted cheese',
+                hasVariants: true,
+                variants: [
+                    { name: 'Single', price: 49 },
+                    { name: 'Double', price: 99 }
+                ]
+            },
+            {
+                id: 's17',
+                name: 'Veg Loaded Fries',
+                category: 'snacks',
+                desc: 'Fries smothered in veggies and sauces (Full Plate)',
+                hasVariants: false,
+                price: 99,
+                variantName: 'Full Plate'
+            },
+            {
+                id: 's18',
+                name: 'Chicken Loaded Fries',
+                category: 'snacks',
+                desc: 'Fries loaded with savory chicken pieces and signature dressings (Full Plate)',
+                hasVariants: false,
+                price: 119,
+                variantName: 'Full Plate'
+            }
+        ];
+
+        let cart = [];
+        let currentFilter = 'all';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMenu(currentFilter);
+            updateCartUI();
+        });
+
+        function filterCategory(category) {
+            currentFilter = category;
+            document.querySelectorAll('.category-tab').forEach(btn => {
+                btn.classList.remove('bg-cafe-green', 'text-white', 'shadow-md');
+                btn.classList.add('bg-cafe-card', 'text-slate-300', 'border', 'border-cafe-accent');
+            });
+            const activeBtn = document.getElementById(`tab-${category}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-cafe-card', 'text-slate-300', 'border', 'border-cafe-accent');
+                activeBtn.classList.add('bg-cafe-green', 'text-white', 'shadow-md');
+            }
+            renderMenu(category);
+        }
+
+        function renderMenu(category) {
+            const grid = document.getElementById('menuGrid');
+            grid.innerHTML = '';
+
+            const filtered = category === 'all' 
+                ? menuData 
+                : menuData.filter(item => item.category === category);
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-cafe-card border border-cafe-accent rounded-2xl p-5 flex flex-col justify-between hover:border-cafe-lightgreen/50 transition-all duration-200 shadow-xl';
+                
+                let html = `
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-serif font-bold text-lg text-white">${item.name}</h3>
+                            <span class="text-[10px] px-2.5 py-1 rounded-full bg-cafe-dark border border-cafe-accent text-cafe-gold uppercase tracking-wider font-semibold">${item.category}</span>
+                        </div>
+                        <p class="text-slate-400 text-xs mb-4 line-clamp-2 leading-relaxed">${item.desc}</p>
+                    </div>
+                `;
+
+                if (item.hasVariants) {
+                    html += `
+                        <div class="space-y-3 mt-auto">
+                            <div class="grid grid-cols-2 gap-2.5">
+                    `;
+                    item.variants.forEach((v) => {
+                        html += `
+                            <button onclick="addToCart('${item.id}', '${v.name}', ${v.price})" class="bg-cafe-dark hover:bg-cafe-green/40 border border-cafe-accent hover:border-cafe-lightgreen text-left p-3 rounded-xl transition-all flex flex-col justify-between group shadow-sm">
+                                <span class="text-xs text-slate-300 font-medium group-hover:text-white">${v.name}</span>
+                                <span class="text-sm font-bold text-cafe-gold mt-1.5">₹${v.price}</span>
+                            </button>
+                        `;
+                    });
+                    html += `</div></div>`;
+                } else {
+                    html += `
+                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-cafe-accent/60">
+                            <div>
+                                <span class="text-[11px] text-slate-400 block font-medium">${item.variantName}</span>
+                                <span class="text-base font-bold text-cafe-gold">₹${item.price}</span>
+                            </div>
+                            <button onclick="addToCart('${item.id}', '${item.variantName}', ${item.price})" class="bg-cafe-green hover:bg-cafe-lightgreen text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-md flex items-center space-x-1.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i>
+                                <span>Add</span>
+                            </button>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = html;
+                grid.appendChild(card);
+            });
+        }
+
+        function addToCart(itemId, variantName, price) {
+            const itemDef = menuData.find(m => m.id === itemId);
+            const cartKey = `${itemId}-${variantName}`;
+            
+            const existingIndex = cart.findIndex(c => c.cartKey === cartKey);
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity += 1;
+            } else {
+                cart.push({
+                    cartKey: cartKey,
+                    id: itemId,
+                    name: itemDef.name,
+                    variant: variantName,
+                    price: price,
+                    quantity: 1
+                });
+            }
+
+            updateCartUI();
+            
+            const badge = document.getElementById('cartBadge');
+            badge.classList.add('scale-125');
+            setTimeout(() => badge.classList.remove('scale-125'), 200);
+        }
+
+        function updateQuantity(cartKey, change) {
+            const index = cart.findIndex(c => c.cartKey === cartKey);
+            if (index > -1) {
+                cart[index].quantity += change;
+                if (cart[index].quantity <= 0) {
+                    cart.splice(index, 1);
+                }
+            }
+            updateCartUI();
+        }
+
+        function removeFromCart(cartKey) {
+            cart = cart.filter(c => c.cartKey !== cartKey);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            document.getElementById('cartBadge').innerText = totalCount;
+            document.getElementById('desktopItemCount').innerText = `${totalCount} item${totalCount === 1 ? '' : 's'}`;
+
+            const desktopContainer = document.getElementById('desktopCartItems');
+            const mobileContainer = document.getElementById('mobileCartItems');
+            const desktopCheckout = document.getElementById('desktopCheckoutSection');
+            const mobileCheckout = document.getElementById('mobileCheckoutSection');
+
+            if (cart.length === 0) {
+                const emptyHTML = `
+                    <div class="text-center py-12 text-slate-500">
+                        <i class="fa-solid fa-mug-hot text-4xl mb-3 opacity-40"></i>
+                        <p class="text-sm">Your cart is empty.<br>Select items from the menu to start order.</p>
+                    </div>
+                `;
+                desktopContainer.innerHTML = emptyHTML;
+                mobileContainer.innerHTML = emptyHTML;
+                desktopCheckout.classList.add('hidden');
+                mobileCheckout.classList.add('hidden');
+            } else {
+                desktopCheckout.classList.remove('hidden');
+                mobileCheckout.classList.remove('hidden');
+
+                let itemsHTML = '';
+                cart.forEach(item => {
+                    itemsHTML += `
+                        <div class="py-3 flex items-center justify-between">
+                            <div class="pr-2 flex-grow">
+                                <h4 class="text-white text-sm font-semibold">${item.name}</h4>
+                                <span class="text-xs text-slate-400">${item.variant} • ₹${item.price} each</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="flex items-center bg-cafe-dark border border-cafe-accent rounded-lg overflow-hidden shadow-inner">
+                                    <button onclick="updateQuantity('${item.cartKey}', -1)" class="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-cafe-accent transition-colors">-</button>
+                                    <span class="px-2 text-xs font-semibold text-white">${item.quantity}</span>
+                                    <button onclick="updateQuantity('${item.cartKey}', 1)" class="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-cafe-accent transition-colors">+</button>
+                                </div>
+                                <span class="text-xs font-bold text-cafe-gold w-12 text-right">₹${item.price * item.quantity}</span>
+                                <button onclick="removeFromCart('${item.cartKey}')" class="text-red-400 hover:text-red-300 p-1.5 transition-colors hover:bg-red-500/10 rounded" title="Remove item">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                desktopContainer.innerHTML = itemsHTML;
+                mobileContainer.innerHTML = itemsHTML;
+
+                document.getElementById('desktopSubtotal').innerText = `₹${subtotal}`;
+                document.getElementById('desktopTotal').innerText = `₹${subtotal}`;
+                document.getElementById('mobileSubtotal').innerText = `₹${subtotal}`;
+                document.getElementById('mobileTotal').innerText = `₹${subtotal}`;
+            }
+        }
+
+        function toggleCartDrawer(open) {
+            const drawer = document.getElementById('cartDrawer');
+            const content = document.getElementById('cartDrawerContent');
+            if (open) {
+                drawer.classList.remove('hidden');
+                setTimeout(() => {
+                    drawer.classList.remove('opacity-0');
+                    content.classList.remove('translate-x-full');
+                }, 10);
+            } else {
+                drawer.classList.add('opacity-0');
+                content.classList.add('translate-x-full');
+                setTimeout(() => {
+                    drawer.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        function sendOrderToWhatsApp() {
+            const nameInput = document.getElementById('customerName').value.trim() || document.getElementById('mobileCustomerName').value.trim();
+            const tableInput = document.getElementById('tableNumber').value.trim() || document.getElementById('mobileTableNumber').value.trim();
+
+            if (!nameInput) {
+                alert('Please enter your name for the dine-in order.');
+                document.getElementById('customerName').focus();
+                return;
+            }
+            if (!tableInput) {
+                alert('Please enter your Table Number for dine-in service.');
+                document.getElementById('tableNumber').focus();
+                return;
+            }
+
+            let message = `🍽️ *NEW DINE-IN ORDER* 🍽️\n`;
+            message += `------------------------------------\n`;
+            message += `👤 *Customer:* ${nameInput}\n`;
+            message += `📍 *Table Number:* ${tableInput}\n`;
+            message += `------------------------------------\n\n`;
+            message += `*Items Ordered:*\n`;
+
+            cart.forEach((item, index) => {
+                message += `${index + 1}. ${item.name} (${item.variant}) x ${item.quantity} - ₹${item.price * item.quantity}\n`;
+            });
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            message += `\n------------------------------------\n`;
+            message += `💰 *Total Amount:* ₹${subtotal}\n`;
+            message += `------------------------------------\n`;
+            message += `_Sent via Rooted Grounds Online Ordering_`;
+
+            const cafeWhatsAppNumber = "919876543210"; 
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappURL = `https://wa.me/${cafeWhatsAppNumber}?text=${encodedMessage}`;
+
+            window.open(whatsappURL, '_blank');
+        }
+    </script>
+</body>
+</html>
+index.html
+Displaying index.html.
