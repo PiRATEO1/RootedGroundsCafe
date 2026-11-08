@@ -233,30 +233,96 @@
     <!-- JavaScript Application Logic -->
     <script>
         const menuData = [
+            // Individual Mojito Flavors
             {
-                id: 'd1',
-                name: 'Mojito Flavors',
+                id: 'm1',
+                name: 'Blue Curacao Mojito',
                 category: 'drinks',
-                desc: 'Choice of Blue curacco, Grenadine, Green apple, Blue berry, Mojito mint, Green mint',
-                hasVariants: false,
+                desc: 'Refreshing sweet & citrusy blue curacao mojito with mint and lime',
                 price: 59,
                 variantName: 'Standard'
             },
             {
-                id: 'd2',
-                name: 'Shakes',
+                id: 'm2',
+                name: 'Grenadine Mojito',
                 category: 'drinks',
-                desc: 'Choice of Chocolate oreo, Black current, Strawberry, Choco loaded shake',
-                hasVariants: false,
+                desc: 'Sweet pomegranate syrup blended with fresh mint and sparkling soda',
+                price: 59,
+                variantName: 'Standard'
+            },
+            {
+                id: 'm3',
+                name: 'Green Apple Mojito',
+                category: 'drinks',
+                desc: 'Crisp green apple flavour infused with mint leaves and lime',
+                price: 59,
+                variantName: 'Standard'
+            },
+            {
+                id: 'm4',
+                name: 'Blue Berry Mojito',
+                category: 'drinks',
+                desc: 'Juicy blueberry puree muddled with fresh mint and sparkling soda',
+                price: 59,
+                variantName: 'Standard'
+            },
+            {
+                id: 'm5',
+                name: 'Mojito Mint (Classic)',
+                category: 'drinks',
+                desc: 'Classic refreshing cuban style mojito with fresh mint and lime',
+                price: 59,
+                variantName: 'Standard'
+            },
+            {
+                id: 'm6',
+                name: 'Green Mint Mojito',
+                category: 'drinks',
+                desc: 'Cooling vibrant green mint refreshment with a zesty finish',
+                price: 59,
+                variantName: 'Standard'
+            },
+
+            // Individual Shakes
+            {
+                id: 'sh1',
+                name: 'Chocolate Oreo Shake',
+                category: 'drinks',
+                desc: 'Rich chocolate milkshake blended with crushed oreo cookies',
                 price: 79,
                 variantName: 'Standard'
             },
+            {
+                id: 'sh2',
+                name: 'Black Current Shake',
+                category: 'drinks',
+                desc: 'Creamy milkshake infused with sweet and tangy black currant flavor',
+                price: 79,
+                variantName: 'Standard'
+            },
+            {
+                id: 'sh3',
+                name: 'Strawberry Shake',
+                category: 'drinks',
+                desc: 'Classic creamy shake with sweet strawberry goodness',
+                price: 79,
+                variantName: 'Standard'
+            },
+            {
+                id: 'sh4',
+                name: 'Choco Loaded Shake',
+                category: 'drinks',
+                desc: 'Extremely rich thick shake loaded with extra chocolate syrup and toppings',
+                price: 79,
+                variantName: 'Standard'
+            },
+
+            // Tea & Coffee
             {
                 id: 'd3',
                 name: 'Ginger Tea',
                 category: 'drinks',
                 desc: 'Freshly brewed aromatic ginger spiced tea',
-                hasVariants: false,
                 price: 19,
                 variantName: 'Standard'
             },
@@ -265,7 +331,6 @@
                 name: 'Elaichi Tea',
                 category: 'drinks',
                 desc: 'Classic cardamom infused warm tea',
-                hasVariants: false,
                 price: 19,
                 variantName: 'Standard'
             },
@@ -274,7 +339,6 @@
                 name: 'Hot Coffee',
                 category: 'drinks',
                 desc: 'Warm and comforting classic hot coffee',
-                hasVariants: false,
                 price: 19,
                 variantName: 'Standard'
             },
@@ -283,7 +347,6 @@
                 name: 'Lemon Iced Tea',
                 category: 'drinks',
                 desc: 'Refreshing chilled iced tea with fresh lemon',
-                hasVariants: false,
                 price: 59,
                 variantName: 'Standard'
             },
@@ -292,7 +355,6 @@
                 name: 'Iced Americano',
                 category: 'drinks',
                 desc: 'Chilled bold espresso over ice',
-                hasVariants: false,
                 price: 59,
                 variantName: 'Standard'
             },
@@ -301,7 +363,6 @@
                 name: 'Cold Coffee',
                 category: 'drinks',
                 desc: 'Blended creamy chilled coffee delight',
-                hasVariants: false,
                 price: 79,
                 variantName: 'Standard'
             },
@@ -310,10 +371,11 @@
                 name: 'Hot Chocolate',
                 category: 'drinks',
                 desc: 'Rich and velvety warm hot chocolate',
-                hasVariants: false,
                 price: 79,
                 variantName: 'Standard'
             },
+
+            // Snacks & Fast Food
             {
                 id: 's1',
                 name: 'Veg Burger',
@@ -352,7 +414,6 @@
                 name: 'White Sauce Pasta',
                 category: 'snacks',
                 desc: 'Creamy herb-infused Italian white sauce pasta (Full Plate)',
-                hasVariants: false,
                 price: 149,
                 variantName: 'Full Plate'
             },
@@ -361,7 +422,6 @@
                 name: 'Saucy Fried Panner',
                 category: 'snacks',
                 desc: 'Crispy fried paneer cubes tossed in tangy signature sauce (Full Plate)',
-                hasVariants: false,
                 price: 119,
                 variantName: 'Full Plate'
             },
@@ -389,7 +449,7 @@
             },
             {
                 id: 's8',
-                name: 'Seekh Kababs',
+                name: 'Chicken Seekh Kababs',
                 category: 'snacks',
                 desc: 'Flavorful spiced seekh kababs',
                 hasVariants: true,
@@ -490,8 +550,7 @@
                 id: 's17',
                 name: 'Veg Loaded Fries',
                 category: 'snacks',
-                desc: 'Fries smothered in veggies and sauces (Full Plate)',
-                hasVariants: false,
+                desc: 'Fries with  cheessy potato paties and sauces',
                 price: 99,
                 variantName: 'Full Plate'
             },
@@ -499,8 +558,7 @@
                 id: 's18',
                 name: 'Chicken Loaded Fries',
                 category: 'snacks',
-                desc: 'Fries loaded with savory chicken pieces and signature dressings (Full Plate)',
-                hasVariants: false,
+                desc: 'Fries loaded with savory chicken keema and signature dressings',
                 price: 119,
                 variantName: 'Full Plate'
             }
@@ -526,6 +584,11 @@
                 activeBtn.classList.add('bg-cafe-green', 'text-white', 'shadow-md');
             }
             renderMenu(category);
+        }
+
+        function getCartQuantity(cartKey) {
+            const item = cart.find(c => c.cartKey === cartKey);
+            return item ? item.quantity : 0;
         }
 
         function renderMenu(category) {
@@ -556,27 +619,62 @@
                             <div class="grid grid-cols-2 gap-2.5">
                     `;
                     item.variants.forEach((v) => {
-                        html += `
-                            <button onclick="addToCart('${item.id}', '${v.name}', ${v.price})" class="bg-cafe-dark hover:bg-cafe-green/40 border border-cafe-accent hover:border-cafe-lightgreen text-left p-3 rounded-xl transition-all flex flex-col justify-between group shadow-sm">
-                                <span class="text-xs text-slate-300 font-medium group-hover:text-white">${v.name}</span>
-                                <span class="text-sm font-bold text-cafe-gold mt-1.5">₹${v.price}</span>
-                            </button>
-                        `;
+                        const cartKey = `${item.id}-${v.name}`;
+                        const qty = getCartQuantity(cartKey);
+
+                        if (qty > 0) {
+                            html += `
+                                <div class="bg-cafe-dark border border-cafe-lightgreen/60 p-2 rounded-xl flex flex-col justify-between shadow-sm">
+                                    <span class="text-[11px] text-slate-300 font-medium truncate">${v.name}</span>
+                                    <div class="flex items-center justify-between mt-1">
+                                        <button onclick="updateQuantity('${cartKey}', -1)" class="w-7 h-7 bg-cafe-accent hover:bg-red-900/60 text-white rounded-lg flex items-center justify-center transition-colors text-xs font-bold">-</button>
+                                        <span class="text-sm font-bold text-cafe-gold px-2">${qty}</span>
+                                        <button onclick="updateQuantity('${cartKey}', 1)" class="w-7 h-7 bg-cafe-green hover:bg-cafe-lightgreen text-white rounded-lg flex items-center justify-center transition-colors text-xs font-bold">+</button>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            html += `
+                                <button onclick="addToCart('${item.id}', '${v.name}', ${v.price})" class="bg-cafe-dark hover:bg-cafe-green/40 border border-cafe-accent hover:border-cafe-lightgreen text-left p-3 rounded-xl transition-all flex flex-col justify-between group shadow-sm">
+                                    <span class="text-xs text-slate-300 font-medium group-hover:text-white">${v.name}</span>
+                                    <span class="text-sm font-bold text-cafe-gold mt-1.5">₹${v.price}</span>
+                                </button>
+                            `;
+                        }
                     });
                     html += `</div></div>`;
                 } else {
-                    html += `
-                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-cafe-accent/60">
-                            <div>
-                                <span class="text-[11px] text-slate-400 block font-medium">${item.variantName}</span>
-                                <span class="text-base font-bold text-cafe-gold">₹${item.price}</span>
+                    const cartKey = `${item.id}-${item.variantName}`;
+                    const qty = getCartQuantity(cartKey);
+
+                    if (qty > 0) {
+                        html += `
+                            <div class="flex items-center justify-between mt-auto pt-4 border-t border-cafe-accent/60">
+                                <div>
+                                    <span class="text-[11px] text-slate-400 block font-medium">${item.variantName}</span>
+                                    <span class="text-base font-bold text-cafe-gold">₹${item.price}</span>
+                                </div>
+                                <div class="flex items-center bg-cafe-dark border border-cafe-lightgreen/60 rounded-xl overflow-hidden shadow-md">
+                                    <button onclick="updateQuantity('${cartKey}', -1)" class="px-3 py-2 text-white bg-cafe-accent hover:bg-red-900/60 transition-colors font-bold text-xs">-</button>
+                                    <span class="px-3 text-xs font-bold text-cafe-gold">${qty}</span>
+                                    <button onclick="updateQuantity('${cartKey}', 1)" class="px-3 py-2 text-white bg-cafe-green hover:bg-cafe-lightgreen transition-colors font-bold text-xs">+</button>
+                                </div>
                             </div>
-                            <button onclick="addToCart('${item.id}', '${item.variantName}', ${item.price})" class="bg-cafe-green hover:bg-cafe-lightgreen text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-md flex items-center space-x-1.5">
-                                <i class="fa-solid fa-plus text-[10px]"></i>
-                                <span>Add</span>
-                            </button>
-                        </div>
-                    `;
+                        `;
+                    } else {
+                        html += `
+                            <div class="flex items-center justify-between mt-auto pt-4 border-t border-cafe-accent/60">
+                                <div>
+                                    <span class="text-[11px] text-slate-400 block font-medium">${item.variantName}</span>
+                                    <span class="text-base font-bold text-cafe-gold">₹${item.price}</span>
+                                </div>
+                                <button onclick="addToCart('${item.id}', '${item.variantName}', ${item.price})" class="bg-cafe-green hover:bg-cafe-lightgreen text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-md flex items-center space-x-1.5">
+                                    <i class="fa-solid fa-plus text-[10px]"></i>
+                                    <span>Add</span>
+                                </button>
+                            </div>
+                        `;
+                    }
                 }
 
                 card.innerHTML = html;
@@ -603,6 +701,7 @@
             }
 
             updateCartUI();
+            renderMenu(currentFilter);
             
             const badge = document.getElementById('cartBadge');
             badge.classList.add('scale-125');
@@ -618,11 +717,13 @@
                 }
             }
             updateCartUI();
+            renderMenu(currentFilter);
         }
 
         function removeFromCart(cartKey) {
             cart = cart.filter(c => c.cartKey !== cartKey);
             updateCartUI();
+            renderMenu(currentFilter);
         }
 
         function updateCartUI() {
@@ -718,22 +819,22 @@
                 return;
             }
 
-            let message = `🍽️ *NEW DINE-IN ORDER* 🍽️\n`;
-            message += `------------------------------------\n`;
+            let message = "🍽️ *NEW DINE-IN ORDER* 🍽️\n";
+            message += "------------------------------------\n";
             message += `👤 *Customer:* ${nameInput}\n`;
             message += `📍 *Table Number:* ${tableInput}\n`;
-            message += `------------------------------------\n\n`;
-            message += `*Items Ordered:*\n`;
+            message += "------------------------------------\n\n";
+            message += "*Items Ordered:*\n";
 
             cart.forEach((item, index) => {
                 message += `${index + 1}. ${item.name} (${item.variant}) x ${item.quantity} - ₹${item.price * item.quantity}\n`;
             });
 
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            message += `\n------------------------------------\n`;
+            message += "\n------------------------------------\n";
             message += `💰 *Total Amount:* ₹${subtotal}\n`;
-            message += `------------------------------------\n`;
-            message += `_Sent via Rooted Grounds Online Ordering_`;
+            message += "------------------------------------\n";
+            message += "_Sent via Rooted Grounds Online Ordering_";
 
             const cafeWhatsAppNumber = "917004506648"; 
             const encodedMessage = encodeURIComponent(message);
