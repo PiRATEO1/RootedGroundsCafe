@@ -109,8 +109,39 @@
             <button onclick="switchTab('expenses')" id="mobNavExpenses" class="px-4 py-1.5 rounded-lg bg-cafe-card text-slate-300">Expenses</button>
         </div>
 
-        <!-- TAB 1: LIVE ORDERS -->
+        <!-- TAB 1: LIVE ORDERS & SALES DASHBOARD -->
         <main id="ordersTab" class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex-grow">
+            <!-- Sales Summary Cards Dashboard -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-5 shadow-xl flex items-center justify-between">
+                    <div>
+                        <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold block mb-1">Today's Total Sales</span>
+                        <span id="todaySalesAmount" class="text-2xl font-bold text-cafe-gold">₹0</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-cafe-gold/10 border border-cafe-gold/30 flex items-center justify-center text-cafe-gold text-lg">
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                    </div>
+                </div>
+                <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-5 shadow-xl flex items-center justify-between">
+                    <div>
+                        <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold block mb-1">Completed Orders</span>
+                        <span id="completedOrdersCount" class="text-2xl font-bold text-emerald-400">0</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-lg">
+                        <i class="fa-solid fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-5 shadow-xl flex items-center justify-between">
+                    <div>
+                        <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold block mb-1">Pending / Preparing</span>
+                        <span id="pendingOrdersCount" class="text-2xl font-bold text-amber-400">0</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-lg">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                </div>
+            </div>
+
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="font-serif text-2xl font-bold text-white">Live Kitchen Orders</h2>
@@ -324,20 +355,37 @@
             }
         });
 
-        // Real-time Firestore Order Listener with Status Toggle & Delete
+        // Real-time Firestore Order Listener with Sales Metrics Dashboard
         function loadLiveOrders() {
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 const table = document.getElementById('liveOrdersTable');
                 table.innerHTML = '';
+                
+                let totalSales = 0;
+                let completedCount = 0;
+                let pendingCount = 0;
+
                 if (snapshot.empty) {
                     table.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">No active orders found. Place an order from index.html to see it appear here!</td></tr>`;
+                    document.getElementById('todaySalesAmount').innerText = '₹0';
+                    document.getElementById('completedOrdersCount').innerText = '0';
+                    document.getElementById('pendingOrdersCount').innerText = '0';
                     return;
                 }
+
                 snapshot.forEach((docSnap) => {
                     const order = docSnap.data();
                     const orderId = docSnap.id;
                     const timeStr = order.createdAt?.toDate ? order.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now';
                     const status = order.status || 'Preparing';
+                    const amount = Number(order.totalAmount) || 0;
+
+                    totalSales += amount;
+                    if (status === 'Completed') {
+                        completedCount++;
+                    } else {
+                        pendingCount++;
+                    }
                     
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -345,7 +393,7 @@
                         <td class="p-3.5 font-semibold text-white">${order.customerName || 'Guest'}</td>
                         <td class="p-3.5 font-semibold text-[#D4AF37]">${order.tableNumber || '-'}</td>
                         <td class="p-3.5 text-slate-300 max-w-xs truncate">${order.items || ''}</td>
-                        <td class="p-3.5 font-bold text-white">₹${order.totalAmount || 0}</td>
+                        <td class="p-3.5 font-bold text-white">₹${amount}</td>
                         <td class="p-3.5">
                             <span class="px-3 py-1 rounded-full text-xs font-semibold ${status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'}">
                                 ${status}
@@ -386,6 +434,12 @@
 
                     table.appendChild(row);
                 });
+
+                // Update Dashboard Metrics Cards
+                document.getElementById('todaySalesAmount').innerText = `₹${totalSales}`;
+                document.getElementById('completedOrdersCount').innerText = completedCount;
+                document.getElementById('pendingOrdersCount').innerText = pendingCount;
+
             }, (error) => {
                 console.error("Firestore orders error:", error);
             });
