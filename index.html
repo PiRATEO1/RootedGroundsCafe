@@ -3,6 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rooted Grounds Cafe - Admin Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cafe: {
+                            dark: '#08140E',
+                            card: '#11251B',
+                            accent: '#1B3B2B',
+                            green: '#2D6A4F',
+                            lightgreen: '#52B788',
+                            gold: '#D4AF37',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #08140E; color: #E2E8F0; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-cafe-lightgreen selection:text-cafe-dark">
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="fixed inset-0 z-50 bg-[#08140E] flex items-center justify-center p-4">
+        <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-8 max-w-md w-full shadow-2xl relative">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-[#D4AF37] mx-auto mb-3 bg-[#08140E] flex items-center justify-center">
+                    <img src="logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                </div>
+                <h2 class="font-serif text-2xl font-bold text-white mb-1" id="formTitle">Admin Sign In</h2>
+                <p class="text-xs text-slate-400">Rooted Grounds Cafe & Kitchen</p>
+            </div>
+
+            <!-- Sign In Form -->
+            <form id="loginForm" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-medium text-slate-300 mb-1">Admin Email</label>
+                    <input type="email" id="adminEmail" required placeholder="admin@rootedgrounds.com" class="w-full bg-[#08140E] border border-[#1B3B2B] rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-[#52B788]">
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-300 mb-1">Password</label>
+                    <input type="password" id="adminPassword" required placeholder="••••••••" class="w-full bg-[#08140E] border border-[#1B3B2B] rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-[#52B788]">
+                </div>
+                <div class="flex items-center justify-between text-slate-400 pt-1">
+                    <span></span>
+                    <button type="button" onclick="window.toggleForgotPassword(true)" class="hover:text-[#D4AF37] transition-colors">Forgot Password?</button>
+                </div>
+                <button type="submit" class="w-full bg-[#2D6A4F] hover:bg-[#52B788] text-white font-semibold py-3 rounded-xl transition-all shadow-md">
+                    Sign In to Dashboard
+                </button>
+                <p id="loginError" class="text-red-400 text-center text-xs mt-2 hidden"></p>
+            </form>
+
+            <!-- Forgot Password Form (Hidden by default) -->
+            <form id="forgotForm" class="space-y-4 text-xs hidden">
+                <p class="text-slate-300 text-center mb-2">Enter your registered admin email to receive a password reset link.</p>
+                <div>
+                    <label class="block font-medium text-slate-300 mb-1">Admin Email</label>
+                    <input type="email" id="resetEmail" required placeholder="admin@rootedgrounds.com" class="w-full bg-[#08140E] border border-[#1B3B2B] rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-[#52B788]">
+                </div>
+                <button type="submit" class="w-full bg-[#2D6A4F] hover:bg-[#52B788] text-white font-semibold py-3 rounded-xl transition-all shadow-md">
+                    Send Password Reset Link
+                </button>
+                <div class="text-center pt-2">
+                    <button type="button" onclick="window.toggleForgotPassword(false)" class="text-slate-400 hover:text-white transition-colors">← Back to Sign In</button>
+                </div>
+                <p id="resetMessage" class="text-center text-xs mt-2 hidden"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN ADMIN DASHBOARD -->
+    <div id="adminDashboard" class="hidden flex-grow flex flex-col">
+        <header class="bg-[#08140E]/95 border-b border-[#1B3B2B] px-8 h-20 flex items-center justify-between sticky top-0 z-40 shadow-xl">
+            <div class="flex items-center space-x-3">
+                <span class="font-serif text-xl font-bold text-white">Cafe Command Center</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-xs text-emerald-400 font-medium bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-full flex items-center">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span> Connected to Firebase
+                </span>
+                <button onclick="window.handleLogout()" class="bg-red-500/10 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-red-500/20 transition-all">
+                    Sign Out
+                </button>
+            </div>
+        </header>
+
+        <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="font-serif text-2xl font-bold text-white">Live Kitchen Orders</h2>
+                    <p class="text-xs text-slate-400">Real-time orders synced directly from customer WhatsApp orders.</p>
+                </div>
+            </div>
+
+            <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-6 shadow-xl overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-[#08140E] text-slate-400 uppercase text-xs">
+                        <tr>
+                            <th class="p-3.5 rounded-l-lg">Time</th>
+                            <th class="p-3.5">Customer Name</th>
+                            <th class="p-3.5">Table No.</th>
+                            <th class="p-3.5">Items Ordered</th>
+                            <th class="p-3.5">Total (₹)</th>
+                            <th class="p-3.5">Status</th>
+                            <th class="p-3.5 rounded-r-lg text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="liveOrdersTable" class="divide-y divide-[#1B3B2B]/40">
+                        <tr><td colspan="7" class="p-6 text-center text-slate-500">Loading orders...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDK & Admin Logic Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkWpEAMd3EKCgC6I-Ka7kChvJfiGE7fjQ",
+            authDomain: "rooted-grounds-cafe.firebaseapp.com",
+            projectId: "rooted-grounds-cafe",
+            storageBucket: "rooted-grounds-cafe.firebasestorage.app",
+            messagingSenderId: "485686639638",
+            appId: "1:485686639638:web:0b700316862a2eadd74937"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Toggle Forgot Password View (Attached to window for global HTML access)
+        window.toggleForgotPassword = function(show) {
+            const loginForm = document.getElementById('loginForm');
+            const forgotForm = document.getElementById('forgotForm');
+            const formTitle = document.getElementById('formTitle');
+            
+            if (show) {
+                loginForm.classList.add('hidden');
+                forgotForm.classList.remove('hidden');
+                formTitle.innerText = "Reset Password";
+            } else {
+                forgotForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+                formTitle.innerText = "Admin Sign In";
+            }
+        };
+
+        // Handle Login Submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevents page reload / reset
+            const email = document.getElementById('adminEmail').value.trim();
+            const pass = document.getElementById('adminPassword').value;
+            const errEl = document.getElementById('loginError');
+
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                errEl.classList.add('hidden');
+            } catch (error) {
+                console.error("Login failed:", error.code, error.message);
+                errEl.innerText = error.message;
+                errEl.classList.remove('hidden');
+            }
+        });
+
+        // Handle Password Reset Submission
+        document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('resetEmail').value.trim();
+            const msgEl = document.getElementById('resetMessage');
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                msgEl.innerText = "Password reset email sent! Check your inbox.";
+                msgEl.className = "text-emerald-400 text-center text-xs mt-2";
+                msgEl.classList.remove('hidden');
+            } catch (error) {
+                msgEl.innerText = error.message;
+                msgEl.className = "text-red-400 text-center text-xs mt-2";
+                msgEl.classList.remove('hidden');
+            }
+        });
+
+        // Handle Logout
+        window.handleLogout = async () => {
+            try {
+                await signOut(auth);
+            } catch (e) {
+                console.error("Logout error:", e);
+            }
+        };
+
+        // Track Auth State & Switch Views
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                loadLiveOrders();
+            } else {
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('adminDashboard').classList.add('hidden');
+            }
+        });
+
+        // Real-time Firestore Order Listener
+        function loadLiveOrders() {
+            const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (snapshot) => {
+                const table = document.getElementById('liveOrdersTable');
+                table.innerHTML = '';
+                if (snapshot.empty) {
+                    table.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">No active orders found.</td></tr>`;
+                    return;
+                }
+                snapshot.forEach((docSnap) => {
+                    const order = docSnap.data();
+                    const orderId = docSnap.id;
+                    const timeStr = order.createdAt?.toDate ? order.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now';
+                    
+                    table.innerHTML += `
+                        <tr>
+                            <td class="p-3.5 text-slate-400 text-xs">${timeStr}</td>
+                            <td class="p-3.5 font-semibold text-white">${order.customerName}</td>
+                            <td class="p-3.5 font-semibold text-[#D4AF37]">${order.tableNumber}</td>
+                            <td class="p-3.5 text-slate-300 max-w-xs truncate">${order.items}</td>
+                            <td class="p-3.5 font-bold text-white">₹${order.totalAmount}</td>
+                            <td class="p-3.5">
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold ${order.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'}">
+                                    ${order.status}
+                                </span>
+                            </td>
+                            <td class="p-3.5 text-right">
+                                <button onclick="window.toggleStatus('${orderId}', '${order.status}')" class="px-3 py-1.5 rounded-lg text-xs font-semibold ${order.status === 'Preparing' ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-amber-600 hover:bg-amber-500 text-white'} shadow transition-all">
+                                    ${order.status === 'Preparing' ? 'Mark Complete' : 'Set Preparing'}
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }, (error) => {
+                console.error("Firestore snapshot error:", error);
+            });
+        }
+
+        // Toggle Order Status
+        window.toggleStatus = async (orderId, currentStatus) => {
+            const newStatus = currentStatus === 'Preparing' ? 'Completed' : 'Preparing';
+            try {
+                await updateDoc(doc(db, "orders", orderId), { status: newStatus });
+            } catch (e) {
+                console.error("Error updating status: ", e);
+            }
+        };
+    </script>
+</body>
+</html>
+What to do next:
+Copy the code above and replace everything inside your local admin.html file.
+
+Open your browser's developer console (F12 -> Console) when you test signing in. If any credential or network issues occur, the exact error code will now print clearly in the console so you can see it instantly!
+
+now update this so it can talk to admin dashboard and we can se orders appear on dashboard.
+
+I have updated both your customer online ordering page (index.html) and your admin dashboard (admin.html) with the full Firebase integration and fixed the sign-in button reloading issue!
+
+HTML icon
+admin
+ HTML 
+HTML icon
+index
+ HTML 
+What was fixed & updated:
+Login Refresh Bug Fixed (admin.html): Added e.preventDefault() to the sign-in form handler so that clicking "Sign In to Dashboard" correctly authenticates through Firebase instead of refreshing the page and appending a ? to the URL.
+
+Global Scope Functions: Bound toggleForgotPassword and handleLogout to the window object so inline HTML click events connect properly with the Firebase module script.
+
+Real-Time Order Sync (index.html 
+→ admin.html): When customers place an order, it saves directly to your Firestore orders collection, instantly populating your live kitchen orders table on the admin panel.
+
+How to Test It Locally:
+Make sure both index.html and admin.html are in your project folder alongside your logo.png.
+
+Open your project using VS Code Live Server (or a local development server so it runs on [http://127.0.0.1:5500](http://127.0.0.1:5500)).
+
+Open admin.html in your browser, enter your admin email and password created in your Firebase Console, and click Sign In.
+
+Open index.html in another tab, add some items to your cart, fill in your name and table number, and click Send Order via WhatsApp.
+
+Check your admin tab—the order will appear on your live dashboard instantly!
+
+
+
+
+
+Gemini is AI and can make mistakes.
+
+Processed and analyzed in code
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rooted Grounds Cafe - Online Ordering</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -37,7 +352,6 @@
         h1, h2, h3, .font-serif {
             font-family: 'Playfair Display', serif;
         }
-        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -58,13 +372,11 @@
     <!-- Top Navigation -->
     <header class="sticky top-0 z-50 bg-cafe-dark/95 backdrop-blur-md border-b border-cafe-accent/60 shadow-xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <!-- Brand Name Only -->
             <div class="flex flex-col">
                 <span class="font-serif text-xl sm:text-2xl font-bold tracking-wide text-white drop-shadow">Rooted Grounds</span>
-                <span class="text-[10px] sm:text-xs uppercase tracking-widest text-cafe-gold font-semibold">Cafe</span>
+                <span class="text-[10px] sm:text-xs uppercase tracking-widest text-cafe-gold font-semibold">Cafe &amp; Kitchen</span>
             </div>
 
-            <!-- Header Actions -->
             <div class="flex items-center space-x-4">
                 <button onclick="toggleCartDrawer(true)" class="relative bg-cafe-green hover:bg-cafe-lightgreen text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2.5 shadow-lg">
                     <i class="fa-solid fa-basket-shopping text-base"></i>
@@ -75,12 +387,11 @@
         </div>
     </header>
 
-    <!-- Hero Banner with Featured Logo Branding -->
+    <!-- Hero Banner -->
     <section class="relative bg-gradient-to-b from-cafe-card to-cafe-dark border-b border-cafe-accent/60 py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:20px_20px]"></div>
         <div class="max-w-4xl mx-auto text-center relative z-10 flex flex-col items-center">
             
-            <!-- Sharp, High-Res Hero Logo Badge -->
             <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-4 border-cafe-gold shadow-2xl bg-cafe-card mb-6 flex items-center justify-center transform hover:rotate-2 transition-transform duration-300">
                 <img src="logo.png" alt="Rooted Grounds Cafe Logo" class="w-full h-full object-cover" style="image-rendering: -webkit-optimize-contrast;">
             </div>
@@ -94,25 +405,21 @@
         </div>
     </section>
 
-    <!-- Main Content Area: Menu & Cart Preview -->
+    <!-- Main Content -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <!-- Menu Categories & Items (Left 8 Cols on LG) -->
         <div class="lg:col-span-8 space-y-8">
-            <!-- Category Tabs / Navigation -->
             <div class="flex overflow-x-auto space-x-2.5 pb-2 scrollbar-none">
                 <button onclick="filterCategory('all')" id="tab-all" class="category-tab px-5 py-2.5 rounded-xl font-semibold text-sm whitespace-nowrap transition-all duration-200 bg-cafe-green text-white shadow-md">All Items</button>
                 <button onclick="filterCategory('drinks')" id="tab-drinks" class="category-tab px-5 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap transition-all duration-200 bg-cafe-card text-slate-300 hover:bg-cafe-accent border border-cafe-accent">Drinks &amp; Shakes</button>
                 <button onclick="filterCategory('snacks')" id="tab-snacks" class="category-tab px-5 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap transition-all duration-200 bg-cafe-card text-slate-300 hover:bg-cafe-accent border border-cafe-accent">Snacks &amp; Fast Food</button>
             </div>
 
-            <!-- Menu Grid Container -->
             <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <!-- Dynamically populated via JavaScript -->
+                <!-- Populated via JS -->
             </div>
         </div>
 
-        <!-- Desktop Cart Sidebar (Right 4 Cols on LG) -->
         <div class="hidden lg:block lg:col-span-4">
             <div class="sticky top-28 bg-cafe-card border border-cafe-accent rounded-2xl p-6 shadow-2xl flex flex-col max-h-[calc(100vh-8rem)]">
                 <div class="flex items-center justify-between pb-4 border-b border-cafe-accent">
@@ -122,7 +429,6 @@
                     <span id="desktopItemCount" class="text-xs bg-cafe-green text-white px-2.5 py-1 rounded-full font-medium shadow">0 items</span>
                 </div>
 
-                <!-- Cart Items List -->
                 <div id="desktopCartItems" class="flex-grow overflow-y-auto py-4 space-y-3 divide-y divide-cafe-accent/50">
                     <div class="text-center py-12 text-slate-500">
                         <i class="fa-solid fa-mug-hot text-4xl mb-3 opacity-40"></i>
@@ -130,7 +436,6 @@
                     </div>
                 </div>
 
-                <!-- Order Form & Checkout Area -->
                 <div id="desktopCheckoutSection" class="pt-4 border-t border-cafe-accent space-y-4 hidden">
                     <div class="space-y-3 bg-cafe-dark/60 p-3.5 rounded-xl border border-cafe-accent">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-cafe-gold">Dine-In Details</h3>
@@ -149,10 +454,6 @@
                             <span>Subtotal</span>
                             <span id="desktopSubtotal">₹0</span>
                         </div>
-                        <div class="flex justify-between text-slate-400 text-xs">
-                            <span>Taxes &amp; Packing</span>
-                            <span>₹0</span>
-                        </div>
                         <div class="flex justify-between text-white font-bold text-base pt-2 border-t border-cafe-accent">
                             <span>Total Amount</span>
                             <span id="desktopTotal" class="text-cafe-gold">₹0</span>
@@ -163,7 +464,7 @@
                         <i class="fa-brands fa-whatsapp text-lg"></i>
                         <span>Send Order via WhatsApp</span>
                     </button>
-                    <p class="text-[11px] text-center text-slate-500">Opens WhatsApp with your pre-formatted order directly to Rooted Grounds Cafe.</p>
+                    <p class="text-[11px] text-center text-slate-500">Opens WhatsApp and syncs with live kitchen order tracker.</p>
                 </div>
             </div>
         </div>
@@ -183,7 +484,7 @@
             </div>
 
             <div id="mobileCartItems" class="flex-grow overflow-y-auto p-5 space-y-3 divide-y divide-cafe-accent/50">
-                <!-- Dynamically populated -->
+                <!-- Populated via JS -->
             </div>
 
             <div id="mobileCheckoutSection" class="p-5 border-t border-cafe-accent space-y-4 bg-cafe-dark/80 hidden">
@@ -222,357 +523,74 @@
     <footer class="bg-cafe-dark border-t border-cafe-accent py-8 mt-auto text-center text-xs text-slate-400">
         <div class="flex justify-center items-center space-x-2 mb-3">
             <div class="w-8 h-8 rounded-full overflow-hidden border border-cafe-gold/50">
-                <img src="logo.png" alt="Logo" class="w-full h-full object-cover" style="image-rendering: -webkit-optimize-contrast;">
+                <img src="logo.png" alt="Logo" class="w-full h-full object-cover">
             </div>
-            <span class="font-serif text-sm text-slate-200 font-semibold">Rooted Grounds Cafe</span>
+            <span class="font-serif text-sm text-slate-200 font-semibold">Rooted Grounds Cafe &amp; Kitchen</span>
         </div>
         <p>Opposite Rudra Luxury Living, Lawgate Ashiana Road</p>
         <p class="mt-3 text-cafe-gold/80 font-medium">&copy; 2026 All Rights Reserved.</p>
     </footer>
 
-    <!-- JavaScript Application Logic -->
-    <script>
+    <!-- Firebase SDK & App Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkWpEAMd3EKCgC6I-Ka7kChvJfiGE7fjQ",
+            authDomain: "rooted-grounds-cafe.firebaseapp.com",
+            projectId: "rooted-grounds-cafe",
+            storageBucket: "rooted-grounds-cafe.firebasestorage.app",
+            messagingSenderId: "485686639638",
+            appId: "1:485686639638:web:0b700316862a2eadd74937"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Menu Data
         const menuData = [
-            // Individual Mojito Flavors
-            {
-                id: 'm1',
-                name: 'Blue Curacao Mojito',
-                category: 'drinks',
-                desc: 'Refreshing sweet & citrusy blue curacao mojito with mint and lime',
-                price: 59,
-                variantName: 'Standard'
-            },
-            {
-                id: 'm2',
-                name: 'Grenadine Mojito',
-                category: 'drinks',
-                desc: 'Sweet pomegranate syrup blended with fresh mint and sparkling soda',
-                price: 59,
-                variantName: 'Standard'
-            },
-            {
-                id: 'm3',
-                name: 'Green Apple Mojito',
-                category: 'drinks',
-                desc: 'Crisp green apple flavour infused with mint leaves and lime',
-                price: 59,
-                variantName: 'Standard'
-            },
-            {
-                id: 'm4',
-                name: 'Blue Berry Mojito',
-                category: 'drinks',
-                desc: 'Juicy blueberry puree muddled with fresh mint and sparkling soda',
-                price: 59,
-                variantName: 'Standard'
-            },
-            {
-                id: 'm5',
-                name: 'Mojito Mint (Classic)',
-                category: 'drinks',
-                desc: 'Classic refreshing cuban style mojito with fresh mint and lime',
-                price: 59,
-                variantName: 'Standard'
-            },
-            {
-                id: 'm6',
-                name: 'Green Mint Mojito',
-                category: 'drinks',
-                desc: 'Cooling vibrant green mint refreshment with a zesty finish',
-                price: 59,
-                variantName: 'Standard'
-            },
-
-            // Individual Shakes
-            {
-                id: 'sh1',
-                name: 'Chocolate Oreo Shake',
-                category: 'drinks',
-                desc: 'Rich chocolate milkshake blended with crushed oreo cookies',
-                price: 79,
-                variantName: 'Standard'
-            },
-            {
-                id: 'sh2',
-                name: 'Black Current Shake',
-                category: 'drinks',
-                desc: 'Creamy milkshake infused with sweet and tangy black currant flavor',
-                price: 79,
-                variantName: 'Standard'
-            },
-            {
-                id: 'sh3',
-                name: 'Strawberry Shake',
-                category: 'drinks',
-                desc: 'Classic creamy shake with sweet strawberry goodness',
-                price: 79,
-                variantName: 'Standard'
-            },
-            {
-                id: 'sh4',
-                name: 'Choco Loaded Shake',
-                category: 'drinks',
-                desc: 'Extremely rich thick shake loaded with extra chocolate syrup and toppings',
-                price: 79,
-                variantName: 'Standard'
-            },
-
-            // Tea & Coffee
-            {
-                id: 'd3',
-                name: 'Ginger Tea',
-                category: 'drinks',
-                desc: 'Freshly brewed aromatic ginger spiced tea',
-                price: 19,
-                variantName: 'Standard'
-            },
-            {
-                id: 'd4',
-                name: 'Elaichi Tea',
-                category: 'drinks',
-                desc: 'Classic cardamom infused warm tea',
-                price: 19,
-                variantName: 'Standard'
-            },
-            {
-                id: 'd5',
-                name: 'Hot Coffee',
-                category: 'drinks',
-                desc: 'Warm and comforting classic hot coffee',
-                price: 19,
-                variantName: 'Standard'
-            },
-            {
-                id: 'd6',
-                name: 'Lemon Iced Tea',
-                category: 'drinks',
-                desc: 'Refreshing chilled iced tea with fresh lemon',
-                price: 59,
-                variantName: 'Standard'
-            },
-            {
-                id: 'd7',
-                name: 'Iced Americano',
-                category: 'drinks',
-                desc: 'Chilled bold espresso over ice',
-                price: 59,
-                variantName: 'Standard'
-            },
-            {
-                id: 'd8',
-                name: 'Cold Coffee',
-                category: 'drinks',
-                desc: 'Blended creamy chilled coffee delight',
-                price: 79,
-                variantName: 'Standard'
-            },
-            {
-                id: 'd9',
-                name: 'Hot Chocolate',
-                category: 'drinks',
-                desc: 'Rich and velvety warm hot chocolate',
-                price: 79,
-                variantName: 'Standard'
-            },
-
-            // Snacks & Fast Food
-            {
-                id: 's1',
-                name: 'Veg Burger',
-                category: 'snacks',
-                desc: 'Crispy veggie patty with fresh lettuce and signature sauce',
-                hasVariants: true,
-                variants: [
-                    { name: 'Single', price: 79 },
-                    { name: 'Double', price: 99 }
-                ]
-            },
-            {
-                id: 's2',
-                name: 'Chicken Smashed Burger',
-                category: 'snacks',
-                desc: 'Juicy smashed chicken patty packed with savory flavor',
-                hasVariants: true,
-                variants: [
-                    { name: 'Single', price: 89 },
-                    { name: 'Double', price: 119 }
-                ]
-            },
-            {
-                id: 's3',
-                name: 'Chicken Crispy Burger',
-                category: 'snacks',
-                desc: 'Extra crispy fried chicken fillet with special dressing',
-                hasVariants: true,
-                variants: [
-                    { name: 'Single', price: 119 },
-                    { name: 'Double', price: 149 }
-                ]
-            },
-            {
-                id: 's4',
-                name: 'White Sauce Pasta',
-                category: 'snacks',
-                desc: 'Creamy herb-infused Italian white sauce pasta (Full Plate)',
-                price: 149,
-                variantName: 'Full Plate'
-            },
-            {
-                id: 's5',
-                name: 'Saucy Fried Panner',
-                category: 'snacks',
-                desc: 'Crispy fried paneer cubes tossed in tangy signature sauce (Full Plate)',
-                price: 119,
-                variantName: 'Full Plate'
-            },
-            {
-                id: 's6',
-                name: 'Pan Grilled Spicy Chicken',
-                category: 'snacks',
-                desc: 'Tender chicken grilled with spicy herbs and seasonings',
-                hasVariants: true,
-                variants: [
-                    { name: 'Half', price: 89 },
-                    { name: 'Full', price: 109 }
-                ]
-            },
-            {
-                id: 's7',
-                name: 'Chicken Nuggets',
-                category: 'snacks',
-                desc: 'Golden fried crispy chicken nuggets',
-                hasVariants: true,
-                variants: [
-                    { name: 'Single', price: 79 },
-                    { name: 'Double', price: 99 }
-                ]
-            },
-            {
-                id: 's8',
-                name: 'Chicken Seekh Kababs',
-                category: 'snacks',
-                desc: 'Flavorful spiced seekh kababs',
-                hasVariants: true,
-                variants: [
-                    { name: 'Single', price: 79 },
-                    { name: 'Double', price: 99 }
-                ]
-            },
-            {
-                id: 's9',
-                name: 'Veg Cheese Nuggets',
-                category: 'snacks',
-                desc: 'Crispy exterior with gooey cheese and veggie filling',
-                hasVariants: true,
-                variants: [
-                    { name: 'Single', price: 79 },
-                    { name: 'Double', price: 99 }
-                ]
-            },
-            {
-                id: 's10',
-                name: 'Potato Cheese Pop',
-                category: 'snacks',
-                desc: 'Bite-sized crispy potato and cheese poppers',
-                hasVariants: true,
-                variants: [
-                    { name: 'Single', price: 79 },
-                    { name: 'Double', price: 99 }
-                ]
-            },
-            {
-                id: 's11',
-                name: 'Potato Wedges',
-                category: 'snacks',
-                desc: 'Seasoned potato wedges fried to golden perfection',
-                hasVariants: true,
-                variants: [
-                    { name: 'Single', price: 79 },
-                    { name: 'Double', price: 99 }
-                ]
-            },
-            {
-                id: 's12',
-                name: 'Salted Fried',
-                category: 'snacks',
-                desc: 'Classic crispy salted French fries',
-                hasVariants: true,
-                variants: [
-                    { name: 'Single', price: 79 },
-                    { name: 'Double', price: 99 }
-                ]
-            },
-            {
-                id: 's13',
-                name: 'Peri-Peri Fries',
-                category: 'snacks',
-                desc: 'Crispy fries tossed in spicy peri-peri seasoning',
-                hasVariants: true,
-                variants: [
-                    { name: 'Single', price: 89 },
-                    { name: 'Double', price: 109 }
-                ]
-            },
-            {
-                id: 's14',
-                name: 'Salted Crinkled Fried',
-                category: 'snacks',
-                desc: 'Crispy crinkle-cut salted fries',
-                hasVariants: true,
-                variants: [
-                    { name: 'Single', price: 89 },
-                    { name: 'Double', price: 109 }
-                ]
-            },
-            {
-                id: 's15',
-                name: 'Peanut Butter Sandwitch',
-                category: 'snacks',
-                desc: 'Nutty and delicious peanut butter sandwich',
-                hasVariants: true,
-                variants: [
-                    { name: 'Single', price: 49 },
-                    { name: 'Double', price: 99 }
-                ]
-            },
-            {
-                id: 's16',
-                name: 'Grilled Cheese Sandwitch',
-                category: 'snacks',
-                desc: 'Buttery toasted sandwich loaded with melted cheese',
-                hasVariants: true,
-                variants: [
-                    { name: 'Single', price: 49 },
-                    { name: 'Double', price: 99 }
-                ]
-            },
-            {
-                id: 's17',
-                name: 'Veg Loaded Fries',
-                category: 'snacks',
-                desc: 'Fries with  cheessy potato paties and sauces',
-                price: 99,
-                variantName: 'Full Plate'
-            },
-            {
-                id: 's18',
-                name: 'Chicken Loaded Fries',
-                category: 'snacks',
-                desc: 'Fries loaded with savory chicken keema and signature dressings',
-                price: 119,
-                variantName: 'Full Plate'
-            }
+            { id: 'm1', name: 'Blue Curacao Mojito', category: 'drinks', desc: 'Refreshing sweet & citrusy blue curacao mojito with mint and lime', price: 59, variantName: 'Standard' },
+            { id: 'm2', name: 'Grenadine Mojito', category: 'drinks', desc: 'Sweet pomegranate syrup blended with fresh mint and sparkling soda', price: 59, variantName: 'Standard' },
+            { id: 'm3', name: 'Green Apple Mojito', category: 'drinks', desc: 'Crisp green apple flavour infused with mint leaves and lime', price: 59, variantName: 'Standard' },
+            { id: 'm4', name: 'Blue Berry Mojito', category: 'drinks', desc: 'Juicy blueberry puree muddled with fresh mint and sparkling soda', price: 59, variantName: 'Standard' },
+            { id: 'm5', name: 'Mojito Mint (Classic)', category: 'drinks', desc: 'Classic refreshing cuban style mojito with fresh mint and lime', price: 59, variantName: 'Standard' },
+            { id: 'm6', name: 'Green Mint Mojito', category: 'drinks', desc: 'Cooling vibrant green mint refreshment with a zesty finish', price: 59, variantName: 'Standard' },
+            { id: 'sh1', name: 'Chocolate Oreo Shake', category: 'drinks', desc: 'Rich chocolate milkshake blended with crushed oreo cookies', price: 79, variantName: 'Standard' },
+            { id: 'sh2', name: 'Black Current Shake', category: 'drinks', desc: 'Creamy milkshake infused with sweet and tangy black currant flavor', price: 79, variantName: 'Standard' },
+            { id: 'sh3', name: 'Strawberry Shake', category: 'drinks', desc: 'Classic creamy shake with sweet strawberry goodness', price: 79, variantName: 'Standard' },
+            { id: 'sh4', name: 'Choco Loaded Shake', category: 'drinks', desc: 'Extremely rich thick shake loaded with extra chocolate syrup and toppings', price: 79, variantName: 'Standard' },
+            { id: 'd3', name: 'Ginger Tea', category: 'drinks', desc: 'Freshly brewed aromatic ginger spiced tea', price: 19, variantName: 'Standard' },
+            { id: 'd4', name: 'Elaichi Tea', category: 'drinks', desc: 'Classic cardamom infused warm tea', price: 19, variantName: 'Standard' },
+            { id: 'd5', name: 'Hot Coffee', category: 'drinks', desc: 'Warm and comforting classic hot coffee', price: 19, variantName: 'Standard' },
+            { id: 'd6', name: 'Lemon Iced Tea', category: 'drinks', desc: 'Refreshing chilled iced tea with fresh lemon', price: 59, variantName: 'Standard' },
+            { id: 'd7', name: 'Iced Americano', category: 'drinks', desc: 'Chilled bold espresso over ice', price: 59, variantName: 'Standard' },
+            { id: 'd8', name: 'Cold Coffee', category: 'drinks', desc: 'Blended creamy chilled coffee delight', price: 79, variantName: 'Standard' },
+            { id: 'd9', name: 'Hot Chocolate', category: 'drinks', desc: 'Rich and velvety warm hot chocolate', price: 79, variantName: 'Standard' },
+            { id: 's1', name: 'Veg Burger', category: 'snacks', desc: 'Crispy veggie patty with fresh lettuce and signature sauce', hasVariants: true, variants: [{ name: 'Single', price: 79 }, { name: 'Double', price: 99 }] },
+            { id: 's2', name: 'Chicken Smashed Burger', category: 'snacks', desc: 'Juicy smashed chicken patty packed with savory flavor', hasVariants: true, variants: [{ name: 'Single', price: 89 }, { name: 'Double', price: 119 }] },
+            { id: 's3', name: 'Chicken Crispy Burger', category: 'snacks', desc: 'Extra crispy fried chicken fillet with special dressing', hasVariants: true, variants: [{ name: 'Single', price: 119 }, { name: 'Double', price: 149 }] },
+            { id: 's4', name: 'White Sauce Pasta', category: 'snacks', desc: 'Creamy herb-infused Italian white sauce pasta (Full Plate)', price: 149, variantName: 'Full Plate' },
+            { id: 's5', name: 'Saucy Fried Panner', category: 'snacks', desc: 'Crispy fried paneer cubes tossed in tangy signature sauce (Full Plate)', price: 119, variantName: 'Full Plate' },
+            { id: 's6', name: 'Pan Grilled Spicy Chicken', category: 'snacks', desc: 'Tender chicken grilled with spicy herbs and seasonings', hasVariants: true, variants: [{ name: 'Half', price: 89 }, { name: 'Full', price: 109 }] },
+            { id: 's7', name: 'Chicken Nuggets', category: 'snacks', desc: 'Golden fried crispy chicken nuggets', hasVariants: true, variants: [{ name: 'Single', price: 79 }, { name: 'Double', price: 99 }] },
+            { id: 's8', name: 'Chicken Seekh Kababs', category: 'snacks', desc: 'Flavorful spiced seekh kababs', hasVariants: true, variants: [{ name: 'Single', price: 79 }, { name: 'Double', price: 99 }] },
+            { id: 's9', name: 'Veg Cheese Nuggets', category: 'snacks', desc: 'Crispy exterior with gooey cheese and veggie filling', hasVariants: true, variants: [{ name: 'Single', price: 79 }, { name: 'Double', price: 99 }] },
+            { id: 's10', name: 'Potato Cheese Pop', category: 'snacks', desc: 'Bite-sized crispy potato and cheese poppers', hasVariants: true, variants: [{ name: 'Single', price: 79 }, { name: 'Double', price: 99 }] },
+            { id: 's11', name: 'Potato Wedges', category: 'snacks', desc: 'Seasoned potato wedges fried to golden perfection', hasVariants: true, variants: [{ name: 'Single', price: 79 }, { name: 'Double', price: 99 }] },
+            { id: 's12', name: 'Salted Fried', category: 'snacks', desc: 'Classic crispy salted French fries', hasVariants: true, variants: [{ name: 'Single', price: 79 }, { name: 'Double', price: 99 }] },
+            { id: 's13', name: 'Peri-Peri Fries', category: 'snacks', desc: 'Crispy fries tossed in spicy peri-peri seasoning', hasVariants: true, variants: [{ name: 'Single', price: 89 }, { name: 'Double', price: 109 }] },
+            { id: 's14', name: 'Salted Crinkled Fried', category: 'snacks', desc: 'Crispy crinkle-cut salted fries', hasVariants: true, variants: [{ name: 'Single', price: 89 }, { name: 'Double', price: 109 }] },
+            { id: 's15', name: 'Peanut Butter Sandwitch', category: 'snacks', desc: 'Nutty and delicious peanut butter sandwich', hasVariants: true, variants: [{ name: 'Single', price: 49 }, { name: 'Double', price: 99 }] },
+            { id: 's16', name: 'Grilled Cheese Sandwitch', category: 'snacks', desc: 'Buttery toasted sandwich loaded with melted cheese', hasVariants: true, variants: [{ name: 'Single', price: 49 }, { name: 'Double', price: 99 }] },
+            { id: 's17', name: 'Veg Loaded Fries', category: 'snacks', desc: 'Fries with cheesy potato patties and sauces', price: 99, variantName: 'Full Plate' },
+            { id: 's18', name: 'Chicken Loaded Fries', category: 'snacks', desc: 'Fries loaded with savory chicken keema and signature dressings', price: 119, variantName: 'Full Plate' }
         ];
 
         let cart = [];
         let currentFilter = 'all';
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderMenu(currentFilter);
-            updateCartUI();
-        });
-
-        function filterCategory(category) {
+        window.filterCategory = function(category) {
             currentFilter = category;
             document.querySelectorAll('.category-tab').forEach(btn => {
                 btn.classList.remove('bg-cafe-green', 'text-white', 'shadow-md');
@@ -584,7 +602,7 @@
                 activeBtn.classList.add('bg-cafe-green', 'text-white', 'shadow-md');
             }
             renderMenu(category);
-        }
+        };
 
         function getCartQuantity(cartKey) {
             const item = cart.find(c => c.cartKey === cartKey);
@@ -682,7 +700,7 @@
             });
         }
 
-        function addToCart(itemId, variantName, price) {
+        window.addToCart = function(itemId, variantName, price) {
             const itemDef = menuData.find(m => m.id === itemId);
             const cartKey = `${itemId}-${variantName}`;
             
@@ -702,13 +720,9 @@
 
             updateCartUI();
             renderMenu(currentFilter);
-            
-            const badge = document.getElementById('cartBadge');
-            badge.classList.add('scale-125');
-            setTimeout(() => badge.classList.remove('scale-125'), 200);
-        }
+        };
 
-        function updateQuantity(cartKey, change) {
+        window.updateQuantity = function(cartKey, change) {
             const index = cart.findIndex(c => c.cartKey === cartKey);
             if (index > -1) {
                 cart[index].quantity += change;
@@ -718,13 +732,13 @@
             }
             updateCartUI();
             renderMenu(currentFilter);
-        }
+        };
 
-        function removeFromCart(cartKey) {
+        window.removeFromCart = function(cartKey) {
             cart = cart.filter(c => c.cartKey !== cartKey);
             updateCartUI();
             renderMenu(currentFilter);
-        }
+        };
 
         function updateCartUI() {
             const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -786,7 +800,7 @@
             }
         }
 
-        function toggleCartDrawer(open) {
+        window.toggleCartDrawer = function(open) {
             const drawer = document.getElementById('cartDrawer');
             const content = document.getElementById('cartDrawerContent');
             if (open) {
@@ -802,9 +816,9 @@
                     drawer.classList.add('hidden');
                 }, 300);
             }
-        }
+        };
 
-        function sendOrderToWhatsApp() {
+        window.sendOrderToWhatsApp = async function() {
             const nameInput = document.getElementById('customerName').value.trim() || document.getElementById('mobileCustomerName').value.trim();
             const tableInput = document.getElementById('tableNumber').value.trim() || document.getElementById('mobileTableNumber').value.trim();
 
@@ -819,6 +833,23 @@
                 return;
             }
 
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const itemsSummary = cart.map(item => `${item.name} (${item.variant}) x ${item.quantity}`).join(', ');
+
+            // Save to Firebase Firestore
+            try {
+                await addDoc(collection(db, "orders"), {
+                    customerName: nameInput,
+                    tableNumber: tableInput,
+                    items: itemsSummary,
+                    totalAmount: subtotal,
+                    status: "Preparing",
+                    createdAt: serverTimestamp()
+                });
+            } catch (e) {
+                console.error("Error saving order to Firestore:", e);
+            }
+
             let message = "🍽️ *NEW DINE-IN ORDER* 🍽️\n";
             message += "------------------------------------\n";
             message += `👤 *Customer:* ${nameInput}\n`;
@@ -830,7 +861,6 @@
                 message += `${index + 1}. ${item.name} (${item.variant}) x ${item.quantity} - ₹${item.price * item.quantity}\n`;
             });
 
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             message += "\n------------------------------------\n";
             message += `💰 *Total Amount:* ₹${subtotal}\n`;
             message += "------------------------------------\n";
@@ -841,9 +871,12 @@
             const whatsappURL = `https://wa.me/${cafeWhatsAppNumber}?text=${encodedMessage}`;
 
             window.open(whatsappURL, '_blank');
-        }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMenu('all');
+            updateCartUI();
+        });
     </script>
 </body>
 </html>
-index.html
-Displaying index.html.
