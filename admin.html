@@ -207,7 +207,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBkWpEAMd3EKCgC6I-Ka7kChvJfiGE7fjQ",
@@ -324,7 +324,7 @@
             }
         });
 
-        // Real-time Firestore Order Listener
+        // Real-time Firestore Order Listener with Status Toggle & Delete
         function loadLiveOrders() {
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 const table = document.getElementById('liveOrdersTable');
@@ -337,6 +337,7 @@
                     const order = docSnap.data();
                     const orderId = docSnap.id;
                     const timeStr = order.createdAt?.toDate ? order.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now';
+                    const status = order.status || 'Preparing';
                     
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -346,23 +347,40 @@
                         <td class="p-3.5 text-slate-300 max-w-xs truncate">${order.items || ''}</td>
                         <td class="p-3.5 font-bold text-white">₹${order.totalAmount || 0}</td>
                         <td class="p-3.5">
-                            <span class="px-3 py-1 rounded-full text-xs font-semibold ${order.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'}">
-                                ${order.status || 'Preparing'}
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold ${status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'}">
+                                ${status}
                             </span>
                         </td>
-                        <td class="p-3.5 text-right">
-                            <button class="action-btn px-3 py-1.5 rounded-lg text-xs font-semibold ${order.status === 'Preparing' ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-amber-600 hover:bg-amber-500 text-white'} shadow transition-all">
-                                ${order.status === 'Preparing' ? 'Mark Complete' : 'Set Preparing'}
+                        <td class="p-3.5 text-right space-x-2">
+                            <button class="action-btn px-3 py-1.5 rounded-lg text-xs font-semibold ${status === 'Preparing' ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-amber-600 hover:bg-amber-500 text-white'} shadow transition-all">
+                                ${status === 'Preparing' ? 'Mark Complete' : 'Set Preparing'}
+                            </button>
+                            <button class="delete-order-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-all" title="Delete Order / Duplicate">
+                                <i class="fa-solid fa-trash-can"></i>
                             </button>
                         </td>
                     `;
                     
+                    // Status Toggle Handler
                     row.querySelector('.action-btn').addEventListener('click', async () => {
-                        const newStatus = order.status === 'Preparing' ? 'Completed' : 'Preparing';
+                        const newStatus = status === 'Preparing' ? 'Completed' : 'Preparing';
                         try {
                             await updateDoc(doc(db, "orders", orderId), { status: newStatus });
                         } catch (e) {
                             console.error("Error updating status: ", e);
+                            alert("Failed to update status.");
+                        }
+                    });
+
+                    // Delete Order Handler
+                    row.querySelector('.delete-order-btn').addEventListener('click', async () => {
+                        if (confirm(`Delete order for ${order.customerName || 'Customer'} (Table ${order.tableNumber || '-'})?`)) {
+                            try {
+                                await deleteDoc(doc(db, "orders", orderId));
+                            } catch (e) {
+                                console.error("Error deleting order: ", e);
+                                alert("Failed to delete order.");
+                            }
                         }
                     });
 
