@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rooted Grounds Cafe - Admin Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cafe: {
+                            dark: '#08140E',
+                            card: '#11251B',
+                            accent: '#1B3B2B',
+                            green: '#2D6A4F',
+                            lightgreen: '#52B788',
+                            gold: '#D4AF37',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #08140E; color: #E2E8F0; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-cafe-lightgreen selection:text-cafe-dark">
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="fixed inset-0 z-50 bg-[#08140E] flex items-center justify-center p-4">
+        <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-8 max-w-md w-full shadow-2xl relative">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-[#D4AF37] mx-auto mb-3 bg-[#08140E] flex items-center justify-center">
+                    <img src="logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                </div>
+                <h2 class="font-serif text-2xl font-bold text-white mb-1" id="formTitle">Admin Sign In</h2>
+                <p class="text-xs text-slate-400">Rooted Grounds Cafe & Kitchen</p>
+            </div>
+
+            <!-- Sign In Form -->
+            <form id="loginForm" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-medium text-slate-300 mb-1">Admin Email</label>
+                    <input type="email" id="adminEmail" required placeholder="admin@rootedgrounds.com" class="w-full bg-[#08140E] border border-[#1B3B2B] rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-[#52B788]">
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-300 mb-1">Password</label>
+                    <input type="password" id="adminPassword" required placeholder="••••••••" class="w-full bg-[#08140E] border border-[#1B3B2B] rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-[#52B788]">
+                </div>
+                <div class="flex items-center justify-between text-slate-400 pt-1">
+                    <span></span>
+                    <button type="button" id="forgotBtn" class="hover:text-[#D4AF37] transition-colors">Forgot Password?</button>
+                </div>
+                <button type="submit" class="w-full bg-[#2D6A4F] hover:bg-[#52B788] text-white font-semibold py-3 rounded-xl transition-all shadow-md">
+                    Sign In to Dashboard
+                </button>
+                <p id="loginError" class="text-red-400 text-center text-xs mt-2 hidden"></p>
+            </form>
+
+            <!-- Forgot Password Form (Hidden by default) -->
+            <form id="forgotForm" class="space-y-4 text-xs hidden">
+                <p class="text-slate-300 text-center mb-2">Enter your registered admin email to receive a password reset link.</p>
+                <div>
+                    <label class="block font-medium text-slate-300 mb-1">Admin Email</label>
+                    <input type="email" id="resetEmail" required placeholder="admin@rootedgrounds.com" class="w-full bg-[#08140E] border border-[#1B3B2B] rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-[#52B788]">
+                </div>
+                <button type="submit" class="w-full bg-[#2D6A4F] hover:bg-[#52B788] text-white font-semibold py-3 rounded-xl transition-all shadow-md">
+                    Send Password Reset Link
+                </button>
+                <div class="text-center pt-2">
+                    <button type="button" id="backBtn" class="text-slate-400 hover:text-white transition-colors">← Back to Sign In</button>
+                </div>
+                <p id="resetMessage" class="text-center text-xs mt-2 hidden"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN ADMIN DASHBOARD -->
+    <div id="adminDashboard" class="hidden flex-grow flex flex-col">
+        <header class="bg-[#08140E]/95 border-b border-[#1B3B2B] px-8 h-20 flex items-center justify-between sticky top-0 z-40 shadow-xl">
+            <div class="flex items-center space-x-3">
+                <span class="font-serif text-xl font-bold text-white">Cafe Command Center</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-xs text-emerald-400 font-medium bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-full flex items-center">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span> Connected to Firebase
+                </span>
+                <button id="logoutBtn" class="bg-red-500/10 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-red-500/20 transition-all">
+                    Sign Out
+                </button>
+            </div>
+        </header>
+
+        <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="font-serif text-2xl font-bold text-white">Live Kitchen Orders</h2>
+                    <p class="text-xs text-slate-400">Real-time orders synced directly from customer online menu.</p>
+                </div>
+            </div>
+
+            <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-6 shadow-xl overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-[#08140E] text-slate-400 uppercase text-xs">
+                        <tr>
+                            <th class="p-3.5 rounded-l-lg">Time</th>
+                            <th class="p-3.5">Customer Name</th>
+                            <th class="p-3.5">Table No.</th>
+                            <th class="p-3.5">Items Ordered</th>
+                            <th class="p-3.5">Total (₹)</th>
+                            <th class="p-3.5">Status</th>
+                            <th class="p-3.5 rounded-r-lg text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="liveOrdersTable" class="divide-y divide-[#1B3B2B]/40">
+                        <tr><td colspan="7" class="p-6 text-center text-slate-500">Loading orders...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDK & Admin Logic Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkWpEAMd3EKCgC6I-Ka7kChvJfiGE7fjQ",
+            authDomain: "rooted-grounds-cafe.firebaseapp.com",
+            projectId: "rooted-grounds-cafe",
+            storageBucket: "rooted-grounds-cafe.firebasestorage.app",
+            messagingSenderId: "485686639638",
+            appId: "1:485686639638:web:0b700316862a2eadd74937"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Toggle Forgot Password View
+        document.getElementById('forgotBtn').addEventListener('click', () => {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('forgotForm').classList.remove('hidden');
+            document.getElementById('formTitle').innerText = "Reset Password";
+        });
+
+        document.getElementById('backBtn').addEventListener('click', () => {
+            document.getElementById('forgotForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('formTitle').innerText = "Admin Sign In";
+        });
+
+        // Handle Login Submission with Custom Error Messages
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value.trim();
+            const pass = document.getElementById('adminPassword').value;
+            const errEl = document.getElementById('loginError');
+
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                errEl.classList.add('hidden');
+            } catch (error) {
+                console.error("Login failed code:", error.code);
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-email' || error.code === 'auth/invalid-credential') {
+                    errEl.innerText = "Unauthorized";
+                } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-password') {
+                    errEl.innerText = "Incorrect credentials";
+                } else {
+                    errEl.innerText = "Incorrect credentials / Unauthorized";
+                }
+                errEl.classList.remove('hidden');
+            }
+        });
+
+        // Handle Password Reset Submission
+        document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('resetEmail').value.trim();
+            const msgEl = document.getElementById('resetMessage');
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                msgEl.innerText = "Password reset email sent! Check your inbox.";
+                msgEl.className = "text-emerald-400 text-center text-xs mt-2";
+                msgEl.classList.remove('hidden');
+            } catch (error) {
+                msgEl.innerText = error.message;
+                msgEl.className = "text-red-400 text-center text-xs mt-2";
+                msgEl.classList.remove('hidden');
+            }
+        });
+
+        // Handle Logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+            } catch (e) {
+                console.error("Logout error:", e);
+            }
+        });
+
+        // Track Auth State & Switch Views
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                loadLiveOrders();
+            } else {
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('adminDashboard').classList.add('hidden');
+            }
+        });
+
+        // Real-time Firestore Order Listener
+        function loadLiveOrders() {
+            const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (snapshot) => {
+                const table = document.getElementById('liveOrdersTable');
+                table.innerHTML = '';
+                if (snapshot.empty) {
+                    table.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">No active orders found.</td></tr>`;
+                    return;
+                }
+                snapshot.forEach((docSnap) => {
+                    const order = docSnap.data();
+                    const orderId = docSnap.id;
+                    const timeStr = order.createdAt?.toDate ? order.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now';
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="p-3.5 text-slate-400 text-xs">${timeStr}</td>
+                        <td class="p-3.5 font-semibold text-white">${order.customerName}</td>
+                        <td class="p-3.5 font-semibold text-[#D4AF37]">${order.tableNumber}</td>
+                        <td class="p-3.5 text-slate-300 max-w-xs truncate">${order.items}</td>
+                        <td class="p-3.5 font-bold text-white">₹${order.totalAmount}</td>
+                        <td class="p-3.5">
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold ${order.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'}">
+                                ${order.status}
+                            </span>
+                        </td>
+                        <td class="p-3.5 text-right">
+                            <button class="action-btn px-3 py-1.5 rounded-lg text-xs font-semibold ${order.status === 'Preparing' ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-amber-600 hover:bg-amber-500 text-white'} shadow transition-all">
+                                ${order.status === 'Preparing' ? 'Mark Complete' : 'Set Preparing'}
+                            </button>
+                        </td>
+                    `;
+                    
+                    row.querySelector('.action-btn').addEventListener('click', async () => {
+                        const newStatus = order.status === 'Preparing' ? 'Completed' : 'Preparing';
+                        try {
+                            await updateDoc(doc(db, "orders", orderId), { status: newStatus });
+                        } catch (e) {
+                            console.error("Error updating status: ", e);
+                        }
+                    });
+
+                    table.appendChild(row);
+                });
+            }, (error) => {
+                console.error("Firestore snapshot error:", error);
+            });
+        }
+    </script>
+</body>
+</html>
