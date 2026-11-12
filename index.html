@@ -521,20 +521,7 @@
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const itemsSummary = cart.map(item => `${item.name} (${item.variant}) x ${item.quantity}`).join(', ');
 
-            // Save to Firebase Firestore
-            try {
-                await addDoc(collection(db, "orders"), {
-                    customerName: nameInput,
-                    tableNumber: tableInput,
-                    items: itemsSummary,
-                    totalAmount: subtotal,
-                    status: "Preparing",
-                    createdAt: serverTimestamp()
-                });
-            } catch (e) {
-                console.error("Error saving order to Firestore:", e);
-            }
-
+            // 1. Prepare WhatsApp URL immediately (prevents Safari popup blocker)
             let message = "🍽️ *NEW DINE-IN ORDER* 🍽️\n";
             message += "------------------------------------\n";
             message += `👤 *Customer:* ${nameInput}\n`;
@@ -555,7 +542,22 @@
             const encodedMessage = encodeURIComponent(message);
             const whatsappURL = `https://wa.me/${cafeWhatsAppNumber}?text=${encodedMessage}`;
 
-            window.open(whatsappURL, '_blank');
+            // 2. Open WhatsApp instantly on mobile Safari
+            window.location.href = whatsappURL;
+
+            // 3. Save to Firebase Firestore in the background
+            try {
+                await addDoc(collection(db, "orders"), {
+                    customerName: nameInput,
+                    tableNumber: tableInput,
+                    items: itemsSummary,
+                    totalAmount: subtotal,
+                    status: "Preparing",
+                    createdAt: serverTimestamp()
+                });
+            } catch (e) {
+                console.error("Error saving order to Firestore:", e);
+            }
         };
 
         document.addEventListener('DOMContentLoaded', () => {
