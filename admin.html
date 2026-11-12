@@ -30,6 +30,9 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #08140E; color: #E2E8F0; }
         .font-serif { font-family: 'Playfair Display', serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #08140E; }
+        ::-webkit-scrollbar-thumb { background: #1B3B2B; border-radius: 3px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-cafe-lightgreen selection:text-cafe-dark">
@@ -85,17 +88,21 @@
 
     <!-- MAIN ADMIN DASHBOARD -->
     <div id="adminDashboard" class="hidden flex-grow flex flex-col">
+        <!-- Header -->
         <header class="bg-[#08140E]/95 border-b border-[#1B3B2B] px-8 h-20 flex items-center justify-between sticky top-0 z-40 shadow-xl">
-            <div class="flex items-center space-x-6">
-                <span class="font-serif text-xl font-bold text-white">Cafe Command Center</span>
-                <nav class="hidden sm:flex space-x-2 text-xs font-semibold">
-                    <button onclick="switchTab('orders')" id="navOrdersBtn" class="px-4 py-2 rounded-xl bg-cafe-green text-white transition-all shadow">Live Orders</button>
-                    <button onclick="switchTab('expenses')" id="navExpensesBtn" class="px-4 py-2 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent">Expense Manager</button>
-                </nav>
+            <div class="flex items-center space-x-4">
+                <div class="w-10 h-10 rounded-full overflow-hidden border border-[#D4AF37] bg-[#11251B] flex items-center justify-center">
+                    <img src="logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                </div>
+                <div>
+                    <span class="font-serif text-lg font-bold text-white block">Rooted Grounds</span>
+                    <span class="text-[9px] uppercase tracking-widest text-cafe-gold font-semibold">Admin Command Center</span>
+                </div>
             </div>
+
             <div class="flex items-center space-x-4">
                 <span class="text-xs text-emerald-400 font-medium bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-full flex items-center">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span> Connected to Firebase
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span> Live Kitchen Sync
                 </span>
                 <button id="logoutBtn" class="bg-red-500/10 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-red-500/20 transition-all">
                     Sign Out
@@ -103,69 +110,144 @@
             </div>
         </header>
 
-        <!-- Mobile Navigation Bar -->
-        <div class="sm:hidden flex bg-[#11251B] border-b border-[#1B3B2B] p-2 justify-around text-xs">
-            <button onclick="switchTab('orders')" id="mobNavOrders" class="px-4 py-1.5 rounded-lg bg-cafe-green text-white font-semibold">Live Orders</button>
-            <button onclick="switchTab('expenses')" id="mobNavExpenses" class="px-4 py-1.5 rounded-lg bg-cafe-card text-slate-300">Expenses</button>
+        <!-- Navigation Tabs Bar -->
+        <div class="bg-[#11251B] border-b border-[#1B3B2B] px-8 py-3 flex items-center space-x-3 overflow-x-auto text-xs font-semibold">
+            <button onclick="switchTab('analytics')" id="navAnalyticsBtn" class="px-5 py-2.5 rounded-xl bg-cafe-green text-white transition-all shadow flex items-center space-x-2">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Overview & Analytics</span>
+            </button>
+            <button onclick="switchTab('orders')" id="navOrdersBtn" class="px-5 py-2.5 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent flex items-center space-x-2">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Live Orders Manager</span>
+            </button>
+            <button onclick="switchTab('expenses')" id="navExpensesBtn" class="px-5 py-2.5 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent flex items-center space-x-2">
+                <i class="fa-solid fa-wallet"></i>
+                <span>Expense & Finance Log</span>
+            </button>
         </div>
 
-        <!-- TAB 1: LIVE ORDERS & SALES DASHBOARD -->
-        <main id="ordersTab" class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex-grow">
-            
-            <!-- Dashboard Controls & Sales Metrics -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#11251B] border border-[#1B3B2B] p-5 rounded-2xl shadow-xl">
+        <!-- TAB 1: OVERVIEW & ANALYTICS -->
+        <main id="analyticsTab" class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex-grow">
+            <!-- Time Range & Header -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#11251B] border border-[#1B3B2B] p-6 rounded-2xl shadow-xl">
                 <div>
-                    <h2 class="font-serif text-xl font-bold text-white mb-1">Sales Performance Dashboard</h2>
-                    <p class="text-xs text-slate-400">Select time range to review revenue and order statistics.</p>
+                    <h2 class="font-serif text-2xl font-bold text-white mb-1">Business Overview</h2>
+                    <p class="text-xs text-slate-400">Monitor revenue performance, expense outflows, and order volume.</p>
                 </div>
                 <div class="flex items-center space-x-3">
                     <label class="text-xs font-semibold text-slate-300">Time Range:</label>
                     <select id="salesTimeRange" onchange="updateSalesMetrics()" class="bg-[#08140E] border border-[#1B3B2B] rounded-xl px-3 py-2 text-xs text-cafe-gold font-bold focus:outline-none focus:border-[#52B788]">
-                        <option value="today">Today's Sale</option>
+                        <option value="today">Today's Performance</option>
                         <option value="7">Last 7 Days (1 Week)</option>
                         <option value="30">Last 30 Days (1 Month)</option>
                         <option value="90">Last 90 Days (3 Months)</option>
-                        <option value="365">Last 365 Days (1 Year)</option>
+                        <option value="365" selected>Last 365 Days (1 Year)</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Sales Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-5 shadow-xl flex items-center justify-between">
+            <!-- 4 Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-6 shadow-xl flex flex-col justify-between">
                     <div>
-                        <span id="salesRangeLabel" class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold block mb-1">Today's Total Sales</span>
+                        <span id="salesRangeLabel" class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block mb-1">Total Revenue</span>
                         <span id="totalSalesAmount" class="text-2xl font-bold text-cafe-gold">₹0</span>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-cafe-gold/10 border border-cafe-gold/30 flex items-center justify-center text-cafe-gold text-lg">
-                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                    <div class="flex items-center justify-between pt-4 mt-4 border-t border-[#1B3B2B]">
+                        <span class="text-[11px] text-emerald-400 font-medium">Active sales volume</span>
+                        <div class="w-8 h-8 rounded-lg bg-cafe-gold/10 border border-cafe-gold/30 flex items-center justify-center text-cafe-gold text-xs">
+                            <i class="fa-solid fa-indian-rupee-sign"></i>
+                        </div>
                     </div>
                 </div>
-                <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-5 shadow-xl flex items-center justify-between">
+
+                <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-6 shadow-xl flex flex-col justify-between">
                     <div>
-                        <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold block mb-1">Completed Orders</span>
-                        <span id="completedOrdersCount" class="text-2xl font-bold text-emerald-400">0</span>
+                        <span class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block mb-1">Total Expenses</span>
+                        <span id="totalExpenseSummary" class="text-2xl font-bold text-red-400">₹0</span>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-lg">
-                        <i class="fa-solid fa-check-circle"></i>
+                    <div class="flex items-center justify-between pt-4 mt-4 border-t border-[#1B3B2B]">
+                        <span class="text-[11px] text-slate-400">Inventory & bills</span>
+                        <div class="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 text-xs">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
                     </div>
                 </div>
-                <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-5 shadow-xl flex items-center justify-between">
+
+                <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-6 shadow-xl flex flex-col justify-between">
                     <div>
-                        <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold block mb-1">Pending / Preparing</span>
-                        <span id="pendingOrdersCount" class="text-2xl font-bold text-amber-400">0</span>
+                        <span class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block mb-1">Net Operating Profit</span>
+                        <span id="netProfitAmount" class="text-2xl font-bold text-emerald-400">₹0</span>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-lg">
-                        <i class="fa-solid fa-clock"></i>
+                    <div class="flex items-center justify-between pt-4 mt-4 border-t border-[#1B3B2B]">
+                        <span class="text-[11px] text-emerald-400 font-medium">Revenue minus expenses</span>
+                        <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xs">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block mb-1">Total Orders Placed</span>
+                        <span id="totalOrdersCount" class="text-2xl font-bold text-white">0</span>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 mt-4 border-t border-[#1B3B2B]">
+                        <span id="orderStatusBreakdown" class="text-[11px] text-slate-400">0 completed, 0 pending</span>
+                        <div class="w-8 h-8 rounded-lg bg-cafe-green/20 border border-cafe-green/40 flex items-center justify-center text-cafe-lightgreen text-xs">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Orders Table Controls (Bulk Delete & Header) -->
-            <div class="flex items-center justify-between flex-wrap gap-4 pt-2">
+            <!-- Lower Grid: Live Kitchen Feed & Expense Breakdown -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-8 bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-[#1B3B2B]">
+                        <h3 class="font-serif text-lg font-bold text-white">Live Kitchen Feed</h3>
+                        <button onclick="switchTab('orders')" class="text-xs text-cafe-gold hover:underline font-medium">View All Orders →</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="text-slate-400 uppercase text-[10px] bg-[#08140E]">
+                                <tr>
+                                    <th class="p-3 rounded-l-lg">Time</th>
+                                    <th class="p-3">Customer</th>
+                                    <th class="p-3">Table</th>
+                                    <th class="p-3">Amount</th>
+                                    <th class="p-3 rounded-r-lg">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="overviewOrdersTable" class="divide-y divide-[#1B3B2B]/40 text-xs">
+                                <tr><td colspan="5" class="p-4 text-center text-slate-500">Loading recent orders...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-[#1B3B2B]">
+                        <h3 class="font-serif text-lg font-bold text-white">Expense Breakdown</h3>
+                        <button onclick="switchTab('expenses')" class="text-xs text-cafe-gold hover:underline font-medium">Details →</button>
+                    </div>
+                    <div id="expenseBreakdownList" class="space-y-3.5 text-xs">
+                        <div class="text-center py-8 text-slate-500">Loading expense categories...</div>
+                    </div>
+                    <div class="pt-3 border-t border-[#1B3B2B] flex justify-between items-center text-xs">
+                        <span class="text-slate-400">Total Outflow (MTD)</span>
+                        <span id="overviewTotalExpense" class="font-bold text-cafe-gold text-sm">₹0</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- TAB 2: LIVE ORDERS MANAGER -->
+        <main id="ordersTab" class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex-grow hidden">
+            <div class="flex items-center justify-between flex-wrap gap-4 bg-[#11251B] border border-[#1B3B2B] p-6 rounded-2xl shadow-xl">
                 <div>
-                    <h2 class="font-serif text-2xl font-bold text-white">Live Kitchen Orders</h2>
-                    <p class="text-xs text-slate-400">Real-time orders synced directly from customer online menu.</p>
+                    <h2 class="font-serif text-2xl font-bold text-white mb-1">Live Orders Manager</h2>
+                    <p class="text-xs text-slate-400">Manage incoming dine-in orders received via WhatsApp integration.</p>
                 </div>
                 <div class="flex items-center space-x-3">
                     <button onclick="deleteSelectedOrders()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center space-x-2">
@@ -198,65 +280,61 @@
             </div>
         </main>
 
-        <!-- TAB 2: EXPENSE MANAGER -->
+        <!-- TAB 3: EXPENSE & FINANCE LOG -->
         <main id="expensesTab" class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex-grow hidden">
-            <div class="flex items-center justify-between flex-wrap gap-4">
-                <div>
-                    <h2 class="font-serif text-2xl font-bold text-white">Cafe Expense Manager</h2>
-                    <p class="text-xs text-slate-400">Track daily inventory purchases, bills, and operational expenses.</p>
-                </div>
-                <div class="bg-[#11251B] border border-[#1B3B2B] px-5 py-3 rounded-2xl flex items-center space-x-4 shadow-lg">
-                    <div>
-                        <span class="text-[10px] uppercase text-slate-400 block font-semibold">Total Expenses</span>
-                        <span id="totalExpenseAmount" class="text-lg font-bold text-cafe-gold">₹0</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-6 shadow-xl">
-                <h3 class="font-serif text-lg font-bold text-white mb-4"><i class="fa-solid fa-plus-circle text-cafe-gold mr-2"></i> Add New Expense</h3>
-                <form id="expenseForm" class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
-                    <div>
-                        <label class="block font-medium text-slate-300 mb-1">Expense Title / Item *</label>
-                        <input type="text" id="expTitle" required placeholder="e.g. Milk & Coffee Beans" class="w-full bg-[#08140E] border border-[#1B3B2B] rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-[#52B788]">
-                    </div>
-                    <div>
-                        <label class="block font-medium text-slate-300 mb-1">Category *</label>
-                        <select id="expCategory" class="w-full bg-[#08140E] border border-[#1B3B2B] rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-[#52B788]">
-                            <option value="Inventory & Raw Materials">Inventory & Raw Materials</option>
-                            <option value="Utilities & Bills">Utilities & Bills</option>
-                            <option value="Maintenance">Maintenance</option>
-                            <option value="Staff & Salaries">Staff & Salaries</option>
-                            <option value="Miscellaneous">Miscellaneous</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-medium text-slate-300 mb-1">Amount (₹) *</label>
-                        <input type="number" id="expAmount" required min="1" placeholder="e.g. 1500" class="w-full bg-[#08140E] border border-[#1B3B2B] rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-[#52B788]">
-                    </div>
-                    <div class="flex items-end">
-                        <button type="submit" class="w-full bg-[#2D6A4F] hover:bg-[#52B788] text-white font-semibold py-2.5 rounded-xl transition-all shadow-md">
-                            Add Expense
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Log New Expense Form -->
+                <div class="lg:col-span-5 bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-6 shadow-xl space-y-4">
+                    <h3 class="font-serif text-lg font-bold text-white mb-2"><i class="fa-solid fa-plus-circle text-cafe-gold mr-2"></i> Log New Expense</h3>
+                    <form id="expenseForm" class="space-y-4 text-xs">
+                        <div>
+                            <label class="block font-medium text-slate-300 mb-1">Expense Category *</label>
+                            <select id="expCategory" class="w-full bg-[#08140E] border border-[#1B3B2B] rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-[#52B788]">
+                                <option value="Inventory & Raw Materials">Inventory (Ingredients/Raw Material)</option>
+                                <option value="Utilities & Bills">Utilities (Electricity/Water)</option>
+                                <option value="Maintenance">Maintenance & Repairs</option>
+                                <option value="Staff & Salaries">Staff & Salaries</option>
+                                <option value="Marketing">Marketing & Ads</option>
+                                <option value="Miscellaneous">Miscellaneous</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-300 mb-1">Description / Item *</label>
+                            <input type="text" id="expTitle" required placeholder="e.g. Fresh Chicken & Eggs" class="w-full bg-[#08140E] border border-[#1B3B2B] rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-[#52B788]">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-300 mb-1">Amount (₹) *</label>
+                            <input type="number" id="expAmount" required min="1" placeholder="e.g. 4500" class="w-full bg-[#08140E] border border-[#1B3B2B] rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-[#52B788]">
+                        </div>
+                        <button type="submit" class="w-full bg-[#2D6A4F] hover:bg-[#52B788] text-white font-semibold py-3 rounded-xl transition-all shadow-md">
+                            Record Expense
                         </button>
-                    </div>
-                </form>
-            </div>
+                    </form>
+                </div>
 
-            <div class="bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-6 shadow-xl overflow-x-auto">
-                <table class="w-full text-left text-sm text-slate-300">
-                    <thead class="bg-[#08140E] text-slate-400 uppercase text-xs">
-                        <tr>
-                            <th class="p-3.5 rounded-l-lg">Date</th>
-                            <th class="p-3.5">Expense Title</th>
-                            <th class="p-3.5">Category</th>
-                            <th class="p-3.5">Amount (₹)</th>
-                            <th class="p-3.5 rounded-r-lg text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="expensesTable" class="divide-y divide-[#1B3B2B]/40">
-                        <tr><td colspan="5" class="p-6 text-center text-slate-500">Loading expenses...</td></tr>
-                    </tbody>
-                </table>
+                <!-- Expense Ledger Table -->
+                <div class="lg:col-span-7 bg-[#11251B] border border-[#1B3B2B] rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-[#1B3B2B]">
+                        <h3 class="font-serif text-lg font-bold text-white">Expense Ledger</h3>
+                        <span id="expenseLedgerTotal" class="text-xs font-bold text-cafe-gold">Total: ₹0</span>
+                    </div>
+                    <div class="overflow-x-auto max-h-[500px]">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-[#08140E] text-slate-400 uppercase text-[10px] sticky top-0">
+                                <tr>
+                                    <th class="p-3 rounded-l-lg">Date</th>
+                                    <th class="p-3">Category</th>
+                                    <th class="p-3">Description</th>
+                                    <th class="p-3">Amount (₹)</th>
+                                    <th class="p-3 rounded-r-lg text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expensesTable" class="divide-y divide-[#1B3B2B]/40 text-xs">
+                                <tr><td colspan="5" class="p-6 text-center text-slate-500">Loading expenses...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -299,34 +377,39 @@
         const db = getFirestore(app);
 
         let allOrdersCache = [];
+        let allExpensesCache = [];
 
         // Tab Switching Logic
         window.switchTab = function(tab) {
+            const analyticsTab = document.getElementById('analyticsTab');
             const ordersTab = document.getElementById('ordersTab');
             const expensesTab = document.getElementById('expensesTab');
-            const navOrders = document.getElementById('navOrdersBtn');
-            const navExpenses = document.getElementById('navExpensesBtn');
-            const mobNavOrders = document.getElementById('mobNavOrders');
-            const mobNavExpenses = document.getElementById('mobNavExpenses');
+            
+            const btnAnalytics = document.getElementById('navAnalyticsBtn');
+            const btnOrders = document.getElementById('navOrdersBtn');
+            const btnExpenses = document.getElementById('navExpensesBtn');
 
-            if (tab === 'orders') {
+            analyticsTab.classList.add('hidden');
+            ordersTab.classList.add('hidden');
+            expensesTab.classList.add('hidden');
+
+            btnAnalytics.className = "px-5 py-2.5 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent flex items-center space-x-2";
+            btnOrders.className = "px-5 py-2.5 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent flex items-center space-x-2";
+            btnExpenses.className = "px-5 py-2.5 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent flex items-center space-x-2";
+
+            if (tab === 'analytics') {
+                analyticsTab.classList.remove('hidden');
+                btnAnalytics.className = "px-5 py-2.5 rounded-xl bg-cafe-green text-white transition-all shadow flex items-center space-x-2";
+            } else if (tab === 'orders') {
                 ordersTab.classList.remove('hidden');
-                expensesTab.classList.add('hidden');
-                navOrders.className = "px-4 py-2 rounded-xl bg-cafe-green text-white transition-all shadow";
-                navExpenses.className = "px-4 py-2 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent";
-                mobNavOrders.className = "px-4 py-1.5 rounded-lg bg-cafe-green text-white font-semibold";
-                mobNavExpenses.className = "px-4 py-1.5 rounded-lg bg-cafe-card text-slate-300";
-            } else {
+                btnOrders.className = "px-5 py-2.5 rounded-xl bg-cafe-green text-white transition-all shadow flex items-center space-x-2";
+            } else if (tab === 'expenses') {
                 expensesTab.classList.remove('hidden');
-                ordersTab.classList.add('hidden');
-                navExpenses.className = "px-4 py-2 rounded-xl bg-cafe-green text-white transition-all shadow";
-                navOrders.className = "px-4 py-2 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent";
-                mobNavExpenses.className = "px-4 py-1.5 rounded-lg bg-cafe-green text-white font-semibold";
-                mobNavOrders.className = "px-4 py-1.5 rounded-lg bg-cafe-card text-slate-300";
+                btnExpenses.className = "px-5 py-2.5 rounded-xl bg-cafe-green text-white transition-all shadow flex items-center space-x-2";
             }
         };
 
-        // Toggle Forgot Password View
+        // Login & Auth State
         document.getElementById('forgotBtn').addEventListener('click', () => {
             document.getElementById('loginForm').classList.add('hidden');
             document.getElementById('forgotForm').classList.remove('hidden');
@@ -339,7 +422,6 @@
             document.getElementById('formTitle').innerText = "Admin Sign In";
         });
 
-        // Handle Login Submission
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('adminEmail').value.trim();
@@ -350,7 +432,6 @@
                 await signInWithEmailAndPassword(auth, email, pass);
                 errEl.classList.add('hidden');
             } catch (error) {
-                console.error("Login failed code:", error.code);
                 if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-email' || error.code === 'auth/invalid-credential') {
                     errEl.innerText = "Unauthorized";
                 } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-password') {
@@ -362,7 +443,6 @@
             }
         });
 
-        // Handle Password Reset
         document.getElementById('forgotForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('resetEmail').value.trim();
@@ -380,16 +460,10 @@
             }
         });
 
-        // Handle Logout
         document.getElementById('logoutBtn').addEventListener('click', async () => {
-            try {
-                await signOut(auth);
-            } catch (e) {
-                console.error("Logout error:", e);
-            }
+            try { await signOut(auth); } catch (e) { console.error(e); }
         });
 
-        // Track Auth State
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('loginScreen').classList.add('hidden');
@@ -402,50 +476,70 @@
             }
         });
 
-        // Real-time Firestore Order Listener & Metrics Updater
+        // Load Orders
         function loadLiveOrders() {
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 allOrdersCache = [];
                 snapshot.forEach((docSnap) => {
                     allOrdersCache.push({ id: docSnap.id, ...docSnap.data() });
                 });
-                renderOrdersTableAndMetrics();
-            }, (error) => {
-                console.error("Firestore orders error:", error);
-            });
+                renderEverything();
+            }, (error) => { console.error(error); });
         }
 
-        // Render Table & Calculate Sales Metrics based on selected time range
+        // Load Expenses
+        function loadExpenses() {
+            onSnapshot(collection(db, "expenses"), (snapshot) => {
+                allExpensesCache = [];
+                snapshot.forEach((docSnap) => {
+                    allExpensesCache.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderEverything();
+            }, (error) => { console.error(error); });
+        }
+
         window.updateSalesMetrics = function() {
-            renderOrdersTableAndMetrics();
+            renderEverything();
         };
 
-        function renderOrdersTableAndMetrics() {
-            const table = document.getElementById('liveOrdersTable');
-            table.innerHTML = '';
+        function renderEverything() {
+            renderAnalyticsAndOverview();
+            renderOrdersTable();
+            renderExpensesTable();
+        }
 
-            const rangeVal = document.getElementById('salesTimeRange').value;
+        function renderAnalyticsAndOverview() {
+            const rangeSelect = document.getElementById('salesTimeRange');
+            const rangeVal = rangeSelect ? rangeSelect.value : 'today';
             const now = new Date();
             
             let filteredOrders = allOrdersCache;
-            let rangeLabelText = "Today's Total Sales";
+            let filteredExpenses = allExpensesCache;
+            let rangeLabelText = "Total Revenue";
 
             if (rangeVal === 'today') {
-                rangeLabelText = "Today's Total Sales";
+                rangeLabelText = "Today's Revenue";
                 filteredOrders = allOrdersCache.filter(order => {
                     if (!order.createdAt?.toDate) return true;
-                    const orderDate = order.createdAt.toDate();
-                    return orderDate.toDateString() === now.toDateString();
+                    return order.createdAt.toDate().toDateString() === now.toDateString();
+                });
+                filteredExpenses = allExpensesCache.filter(exp => {
+                    if (!exp.createdAt?.toDate) return true;
+                    return exp.createdAt.toDate().toDateString() === now.toDateString();
                 });
             } else {
                 const days = parseInt(rangeVal);
-                rangeLabelText = `Last ${days} Days Sales`;
+                rangeLabelText = `Last ${days} Days Revenue`;
                 const cutoffTime = new Date();
                 cutoffTime.setDate(now.getDate() - days);
+
                 filteredOrders = allOrdersCache.filter(order => {
                     if (!order.createdAt?.toDate) return true;
-                    const orderDate = order.createdAt.toDate();
-                    return orderDate >= cutoffTime;
+                    return order.createdAt.toDate() >= cutoffTime;
+                });
+                filteredExpenses = allExpensesCache.filter(exp => {
+                    if (!exp.createdAt?.toDate) return true;
+                    return exp.createdAt.toDate() >= cutoffTime;
                 });
             }
 
@@ -463,12 +557,75 @@
                 else pendingCount++;
             });
 
-            document.getElementById('todaySalesAmount').innerText = `₹${totalSales}`;
-            document.getElementById('completedOrdersCount').innerText = completedCount;
-            document.getElementById('pendingOrdersCount').innerText = pendingCount;
+            let totalExp = 0;
+            const categoryTotals = {};
+            filteredExpenses.forEach(exp => {
+                const amt = Number(exp.amount) || 0;
+                totalExp += amt;
+                const cat = exp.category || 'Miscellaneous';
+                categoryTotals[cat] = (categoryTotals[cat] || 0) + amt;
+            });
+
+            const netProfit = totalSales - totalExp;
+
+            document.getElementById('totalSalesAmount').innerText = `₹${totalSales}`;
+            document.getElementById('totalExpenseSummary').innerText = `₹${totalExp}`;
+            document.getElementById('netProfitAmount').innerText = `₹${netProfit}`;
+            document.getElementById('totalOrdersCount').innerText = filteredOrders.length;
+            document.getElementById('orderStatusBreakdown').innerText = `${completedCount} completed, ${pendingCount} pending`;
+            document.getElementById('overviewTotalExpense').innerText = `₹${totalExp}`;
+
+            // Render Overview Orders Feed (Top 5)
+            const overviewTable = document.getElementById('overviewOrdersTable');
+            overviewTable.innerHTML = '';
+            if (allOrdersCache.length === 0) {
+                overviewTable.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No recent orders found.</td></tr>`;
+            } else {
+                allOrdersCache.slice(0, 5).forEach((order) => {
+                    const timeStr = order.createdAt?.toDate ? order.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now';
+                    const status = order.status || 'Preparing';
+                    overviewTable.innerHTML += `
+                        <tr>
+                            <td class="p-3 text-slate-400">${timeStr}</td>
+                            <td class="p-3 font-semibold text-white">${order.customerName || 'Guest'}</td>
+                            <td class="p-3 text-[#D4AF37]">${order.tableNumber || '-'}</td>
+                            <td class="p-3 font-bold text-white">₹${order.totalAmount || 0}</td>
+                            <td class="p-3"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}">${status}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Render Expense Breakdown Progress Bars
+            const breakdownEl = document.getElementById('expenseBreakdownList');
+            breakdownEl.innerHTML = '';
+            if (Object.keys(categoryTotals).length === 0) {
+                breakdownEl.innerHTML = `<div class="text-center py-6 text-slate-500">No expense records found.</div>`;
+            } else {
+                for (const [cat, amt] of Object.entries(categoryTotals)) {
+                    const pct = totalExp > 0 ? Math.round((amt / totalExp) * 100) : 0;
+                    breakdownEl.innerHTML += `
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-slate-300">
+                                <span class="truncate pr-2">${cat}</span>
+                                <span class="font-bold text-white">₹${amt} (${pct}%)</span>
+                            </div>
+                            <div class="w-full bg-[#08140E] h-2 rounded-full overflow-hidden border border-[#1B3B2B]">
+                                <div class="bg-cafe-gold h-full rounded-full" style="width: ${pct}%"></div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function renderOrdersTable() {
+            const table = document.getElementById('liveOrdersTable');
+            if (!table) return;
+            table.innerHTML = '';
 
             if (allOrdersCache.length === 0) {
-                table.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-500">No active orders found. Place an order from index.html to see it appear here!</td></tr>`;
+                table.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-500">No active orders found. Place an order from index.html!</td></tr>`;
                 return;
             }
 
@@ -510,20 +667,12 @@
 
                 row.querySelector('.action-btn').addEventListener('click', async () => {
                     const newStatus = status === 'Preparing' ? 'Completed' : 'Preparing';
-                    try {
-                        await updateDoc(doc(db, "orders", orderId), { status: newStatus });
-                    } catch (e) {
-                        console.error("Error updating status: ", e);
-                    }
+                    try { await updateDoc(doc(db, "orders", orderId), { status: newStatus }); } catch (e) { console.error(e); }
                 });
 
                 row.querySelector('.delete-order-btn').addEventListener('click', async () => {
                     if (confirm(`Delete order for ${order.customerName || 'Customer'}?`)) {
-                        try {
-                            await deleteDoc(doc(db, "orders", orderId));
-                        } catch (e) {
-                            console.error("Error deleting order: ", e);
-                        }
+                        try { await deleteDoc(doc(db, "orders", orderId)); } catch (e) { console.error(e); }
                     }
                 });
 
@@ -531,7 +680,50 @@
             });
         }
 
-        // Bulk Select & Delete Logic
+        function renderExpensesTable() {
+            const table = document.getElementById('expensesTable');
+            if (!table) return;
+            table.innerHTML = '';
+            let totalExp = 0;
+
+            if (allExpensesCache.length === 0) {
+                table.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">No expenses recorded yet.</td></tr>`;
+                document.getElementById('expenseLedgerTotal').innerText = 'Total: ₹0';
+                return;
+            }
+
+            allExpensesCache.forEach((exp) => {
+                const expId = exp.id;
+                const amount = Number(exp.amount) || 0;
+                totalExp += amount;
+                const dateStr = exp.createdAt?.toDate ? exp.createdAt.toDate().toLocaleDateString() : 'Today';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="p-3 text-slate-400">${dateStr}</td>
+                    <td class="p-3 text-slate-300"><span class="px-2 py-0.5 rounded text-[10px] bg-cafe-accent/60 border border-cafe-accent">${exp.category}</span></td>
+                    <td class="p-3 font-semibold text-white">${exp.title}</td>
+                    <td class="p-3 font-bold text-cafe-gold">₹${amount}</td>
+                    <td class="p-3 text-right">
+                        <button class="del-exp-btn text-red-400 hover:text-red-300 p-1.5 transition-colors hover:bg-red-500/10 rounded" title="Delete Expense">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                    </td>
+                `;
+
+                row.querySelector('.del-exp-btn').addEventListener('click', async () => {
+                    if (confirm(`Delete expense "${exp.title}"?`)) {
+                        try { await deleteDoc(doc(db, "expenses", expId)); } catch (e) { console.error(e); }
+                    }
+                });
+
+                table.appendChild(row);
+            });
+
+            document.getElementById('expenseLedgerTotal').innerText = `Total: ₹${totalExp}`;
+        }
+
+        // Bulk Delete & Modal Logic
         window.toggleSelectAll = function(source) {
             const checkboxes = document.querySelectorAll('.order-checkbox');
             checkboxes.forEach(cb => cb.checked = source.checked);
@@ -545,42 +737,29 @@
 
         window.deleteSelectedOrders = async function() {
             const checked = document.querySelectorAll('.order-checkbox:checked');
-            if (checked.length === 0) {
-                alert('Please select at least one order to delete.');
-                return;
-            }
-            if (confirm(`Are you sure you want to delete ${checked.length} selected order(s)?`)) {
+            if (checked.length === 0) { alert('Please select at least one order to delete.'); return; }
+            if (confirm(`Delete ${checked.length} selected order(s)?`)) {
                 try {
-                    const promises = Array.from(checked).map(cb => {
-                        const id = cb.getAttribute('data-id');
-                        return deleteDoc(doc(db, "orders", id));
-                    });
+                    const promises = Array.from(checked).map(cb => deleteDoc(doc(db, "orders", cb.getAttribute('data-id'))));
                     await Promise.all(promises);
                     document.getElementById('selectAllCheckbox').checked = false;
                     updateSelectedCount();
-                } catch (e) {
-                    console.error("Error bulk deleting orders:", e);
-                    alert("Failed to delete some orders.");
-                }
+                } catch (e) { console.error(e); }
             }
         };
 
-        // Modal Full Order View Logic
         window.openOrderModal = function(orderId) {
             const order = allOrdersCache.find(o => o.id === orderId);
             if (!order) return;
-
             const timeStr = order.createdAt?.toDate ? order.createdAt.toDate().toLocaleString() : 'Just now';
-            const modalContent = document.getElementById('modalOrderContent');
-            
-            modalContent.innerHTML = `
+            document.getElementById('modalOrderContent').innerHTML = `
                 <div class="bg-[#08140E] p-4 rounded-xl border border-[#1B3B2B] space-y-2">
                     <div class="flex justify-between text-xs text-slate-400">
-                        <span>Order Time: ${timeStr}</span>
+                        <span>Time: ${timeStr}</span>
                         <span class="text-cafe-gold font-bold">Status: ${order.status || 'Preparing'}</span>
                     </div>
-                    <div class="text-white font-bold text-base pt-1">Customer: ${order.customerName || 'Guest'}</div>
-                    <div class="text-[#D4AF37] font-semibold text-xs">Table / Location: ${order.tableNumber || '-'}</div>
+                    <div class="text-white font-bold text-base">Customer: ${order.customerName || 'Guest'}</div>
+                    <div class="text-[#D4AF37] font-semibold text-xs">Table: ${order.tableNumber || '-'}</div>
                 </div>
                 <div class="space-y-1 pt-2">
                     <span class="text-xs font-semibold uppercase text-slate-400">Complete Items Breakdown:</span>
@@ -593,7 +772,6 @@
                     <span class="text-cafe-gold text-lg">₹${order.totalAmount || 0}</span>
                 </div>
             `;
-
             document.getElementById('orderModal').classList.remove('hidden');
         };
 
@@ -601,7 +779,7 @@
             document.getElementById('orderModal').classList.add('hidden');
         };
 
-        // Add Expense Form Handler
+        // Add Expense Form
         document.getElementById('expenseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const title = document.getElementById('expTitle').value.trim();
@@ -616,60 +794,8 @@
                     createdAt: serverTimestamp()
                 });
                 document.getElementById('expenseForm').reset();
-            } catch (err) {
-                console.error("Error adding expense:", err);
-            }
+            } catch (err) { console.error(err); }
         });
-
-        // Real-time Expenses Listener
-        function loadExpenses() {
-            onSnapshot(collection(db, "expenses"), (snapshot) => {
-                const table = document.getElementById('expensesTable');
-                table.innerHTML = '';
-                let totalExp = 0;
-
-                if (snapshot.empty) {
-                    table.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">No expenses recorded yet.</td></tr>`;
-                    document.getElementById('totalExpenseAmount').innerText = '₹0';
-                    return;
-                }
-
-                snapshot.forEach((docSnap) => {
-                    const exp = docSnap.data();
-                    const expId = docSnap.id;
-                    const amount = Number(exp.amount) || 0;
-                    totalExp += amount;
-                    const dateStr = exp.createdAt?.toDate ? exp.createdAt.toDate().toLocaleDateString() : 'Today';
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td class="p-3.5 text-slate-400 text-xs">${dateStr}</td>
-                        <td class="p-3.5 font-semibold text-white">${exp.title}</td>
-                        <td class="p-3.5 text-slate-300"><span class="px-2.5 py-1 rounded-lg text-xs bg-cafe-accent/60 border border-cafe-accent">${exp.category}</span></td>
-                        <td class="p-3.5 font-bold text-cafe-gold">₹${amount}</td>
-                        <td class="p-3.5 text-right">
-                            <button class="del-exp-btn text-red-400 hover:text-red-300 p-1.5 transition-colors hover:bg-red-500/10 rounded" title="Delete Expense">
-                                <i class="fa-solid fa-trash-can text-xs"></i>
-                            </button>
-                        </td>
-                    `;
-
-                    row.querySelector('.del-exp-btn').addEventListener('click', async () => {
-                        if (confirm(`Delete expense "${exp.title}"?`)) {
-                            try {
-                                await deleteDoc(doc(db, "expenses", expId));
-                            } catch (err) {
-                                console.error("Error deleting expense:", err);
-                            }
-                        }
-                    });
-
-                    table.appendChild(row);
-                });
-
-                document.getElementById('totalExpenseAmount').innerText = `₹${totalExp}`;
-            });
-        }
     </script>
 </body>
 </html>
