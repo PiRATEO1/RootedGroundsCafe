@@ -89,42 +89,43 @@
     <!-- MAIN ADMIN DASHBOARD -->
     <div id="adminDashboard" class="hidden flex-grow flex flex-col">
         <!-- Header -->
-        <header class="bg-[#08140E]/95 border-b border-[#1B3B2B] px-8 h-20 flex items-center justify-between sticky top-0 z-40 shadow-xl">
-            <div class="flex items-center space-x-4">
-                <div class="w-10 h-10 rounded-full overflow-hidden border border-[#D4AF37] bg-[#11251B] flex items-center justify-center">
+        <header class="bg-[#08140E]/95 border-b border-[#1B3B2B] px-4 sm:px-8 h-16 flex items-center justify-between sticky top-0 z-40 shadow-xl">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border border-[#D4AF37] bg-[#11251B] flex items-center justify-center flex-shrink-0">
                     <img src="logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.style.display='none'">
                 </div>
                 <div>
-                    <span class="font-serif text-lg font-bold text-white block">Rooted Grounds</span>
-                    <span class="text-[9px] uppercase tracking-widest text-cafe-gold font-semibold">Admin Command Center</span>
+                    <span class="font-serif text-xs sm:text-lg font-bold text-white tracking-wide block">Rooted Grounds</span>
+                    <span class="text-[7px] sm:text-[10px] uppercase tracking-wider text-cafe-gold font-medium">Command Center</span>
                 </div>
             </div>
 
-            <div class="flex items-center space-x-4">
-                <span class="text-xs text-emerald-400 font-medium bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-full flex items-center">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span> Live Kitchen Sync
+            <div class="flex items-center space-x-2">
+                <span class="hidden md:flex text-xs text-emerald-400 font-medium bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-full items-center">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span> Live Sync
                 </span>
-                <button id="logoutBtn" class="bg-red-500/10 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-red-500/20 transition-all">
+                <button id="logoutBtn" class="bg-red-500/10 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-xl text-xs font-semibold hover:bg-red-500/20 transition-all">
                     Sign Out
                 </button>
             </div>
         </header>
 
         <!-- Navigation Tabs Bar -->
-        <div class="bg-[#11251B] border-b border-[#1B3B2B] px-8 py-3 flex items-center space-x-3 overflow-x-auto text-xs font-semibold">
-            <button onclick="switchTab('analytics')" id="navAnalyticsBtn" class="px-5 py-2.5 rounded-xl bg-cafe-green text-white transition-all shadow flex items-center space-x-2">
+        <div class="bg-[#11251B] border-b border-[#1B3B2B] px-3 sm:px-8 py-2.5 flex items-center justify-between gap-2 text-xs font-semibold overflow-x-auto scrollbar-none">
+            <button onclick="switchTab('analytics')" id="navAnalyticsBtn" class="flex-1 py-2 px-3 rounded-xl bg-cafe-green text-white transition-all shadow flex items-center justify-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-chart-pie"></i>
-                <span>Overview & Analytics</span>
+                <span>Analytics</span>
             </button>
-            <button onclick="switchTab('orders')" id="navOrdersBtn" class="px-5 py-2.5 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent flex items-center space-x-2">
+            <button onclick="switchTab('orders')" id="navOrdersBtn" class="flex-1 py-2 px-3 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent flex items-center justify-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-receipt"></i>
-                <span>Live Orders Manager</span>
+                <span>Orders</span>
             </button>
-            <button onclick="switchTab('expenses')" id="navExpensesBtn" class="px-5 py-2.5 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent flex items-center space-x-2">
+            <button onclick="switchTab('expenses')" id="navExpensesBtn" class="flex-1 py-2 px-3 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent flex items-center justify-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-wallet"></i>
-                <span>Expense & Finance Log</span>
+                <span>Expenses</span>
             </button>
         </div>
+
 
         <!-- TAB 1: OVERVIEW & ANALYTICS -->
         <main id="analyticsTab" class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex-grow">
@@ -393,19 +394,19 @@
             ordersTab.classList.add('hidden');
             expensesTab.classList.add('hidden');
 
-            btnAnalytics.className = "px-5 py-2.5 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent flex items-center space-x-2";
-            btnOrders.className = "px-5 py-2.5 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent flex items-center space-x-2";
-            btnExpenses.className = "px-5 py-2.5 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent flex items-center space-x-2";
+            btnAnalytics.className = "flex-1 py-2 px-3 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent flex items-center justify-center space-x-2 whitespace-nowrap";
+            btnOrders.className = "flex-1 py-2 px-3 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent flex items-center justify-center space-x-2 whitespace-nowrap";
+            btnExpenses.className = "flex-1 py-2 px-3 rounded-xl bg-cafe-card text-slate-300 hover:bg-cafe-accent transition-all border border-cafe-accent flex items-center justify-center space-x-2 whitespace-nowrap";
 
             if (tab === 'analytics') {
                 analyticsTab.classList.remove('hidden');
-                btnAnalytics.className = "px-5 py-2.5 rounded-xl bg-cafe-green text-white transition-all shadow flex items-center space-x-2";
+                btnAnalytics.className = "flex-1 py-2 px-3 rounded-xl bg-cafe-green text-white transition-all shadow flex items-center justify-center space-x-2 whitespace-nowrap";
             } else if (tab === 'orders') {
                 ordersTab.classList.remove('hidden');
-                btnOrders.className = "px-5 py-2.5 rounded-xl bg-cafe-green text-white transition-all shadow flex items-center space-x-2";
+                btnOrders.className = "flex-1 py-2 px-3 rounded-xl bg-cafe-green text-white transition-all shadow flex items-center justify-center space-x-2 whitespace-nowrap";
             } else if (tab === 'expenses') {
                 expensesTab.classList.remove('hidden');
-                btnExpenses.className = "px-5 py-2.5 rounded-xl bg-cafe-green text-white transition-all shadow flex items-center space-x-2";
+                btnExpenses.className = "flex-1 py-2 px-3 rounded-xl bg-cafe-green text-white transition-all shadow flex items-center justify-center space-x-2 whitespace-nowrap";
             }
         };
 
